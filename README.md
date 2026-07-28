@@ -4,8 +4,8 @@
 already use, then Agent Smith handles screenshots, listings, and App Store
 submission for you.
 
-- [`site/`](site/) — marketing landing page (static, zero dependencies; open
-  `site/index.html` or serve the folder)
+- [`docs/`](docs/) — marketing landing page (static, zero dependencies; open
+  `docs/index.html` or serve the folder)
 - [`server/`](server/) — the product: an MCP server wrapping the App Store
   Connect API + fastlane (stdio for local agents, streamable HTTP for hosting),
   plus a web→mobile pipeline: import a GitHub repo (Lovable, Emergent, Bolt,
