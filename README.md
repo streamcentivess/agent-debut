@@ -1,7 +1,7 @@
-# Agent Jones
+# Agent Debut
 
-**Jones ships the app from any coding agent.** Connect Jones to the tools you
-already use, then Agent Jones handles screenshots, listings, and App Store
+**Debut ships the app from any coding agent.** Connect Debut to the tools you
+already use, then Agent Debut handles screenshots, listings, and App Store
 submission for you.
 
 - [`docs/`](docs/) — marketing landing page (static, zero dependencies; open

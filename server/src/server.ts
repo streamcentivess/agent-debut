@@ -45,7 +45,7 @@ function errorText(err: unknown) {
 
 export function createServer(): McpServer {
   const server = new McpServer({
-    name: "agent-jones",
+    name: "agent-debut",
     version: "0.1.0",
   });
 
@@ -137,7 +137,7 @@ export function createServer(): McpServer {
     async ({ version_id, confirm }) => {
       if (!confirm) {
         return text(
-          "Submitting to Apple review is irreversible, so Jones asks for an explicit go-ahead. Verify the version's build and metadata with get_app_status, then call submit_for_review again with confirm: true."
+          "Submitting to Apple review is irreversible, so Debut asks for an explicit go-ahead. Verify the version's build and metadata with get_app_status, then call submit_for_review again with confirm: true."
         );
       }
       try {
@@ -216,7 +216,7 @@ export function createServer(): McpServer {
     {
       title: "Import a GitHub repo",
       description:
-        "Clone (or update) a GitHub repository into Agent Jones's workspace — the entry point for converting a web app from Lovable, Emergent, Bolt, Replit, v0, or any repo into a mobile app. Returns the local path plus detected framework.",
+        "Clone (or update) a GitHub repository into Agent Debut's workspace — the entry point for converting a web app from Lovable, Emergent, Bolt, Replit, v0, or any repo into a mobile app. Returns the local path plus detected framework.",
       inputSchema: {
         repo_url: z.string().describe("Git clone URL, e.g. https://github.com/user/app.git"),
         branch: z.string().optional().describe("Branch to clone (default: repo default)"),
@@ -386,7 +386,7 @@ export function createServer(): McpServer {
         "Capture a PNG of the booted simulator's screen — for checking how the app looks, or producing App Store screenshots. Returns the saved file path.",
       inputSchema: {
         udid: z.string().optional().describe("Simulator udid (default: the booted one)"),
-        out_path: z.string().optional().describe("Where to save the PNG (default: ~/.agent-jones/screenshots)"),
+        out_path: z.string().optional().describe("Where to save the PNG (default: ~/.agent-debut/screenshots)"),
       },
     },
     async ({ udid, out_path }) => {
@@ -401,9 +401,9 @@ export function createServer(): McpServer {
   server.registerTool(
     "restore_snapshot",
     {
-      title: "Undo Jones's changes",
+      title: "Undo Debut's changes",
       description:
-        "Work protection: roll a workspace back to the snapshot taken before Jones started changing it. Every mobilize_web_app run works on the jones/workbench branch and snapshots first, so this one call undoes everything since.",
+        "Work protection: roll a workspace back to the snapshot taken before Debut started changing it. Every mobilize_web_app run works on the debut/workbench branch and snapshots first, so this one call undoes everything since.",
       inputSchema: {
         project_dir: z.string().describe("Absolute path to the workspace to roll back"),
       },

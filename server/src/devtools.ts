@@ -7,7 +7,7 @@ import { readdirSync } from "node:fs";
 
 const exec = promisify(execFile);
 
-const SHOTS_DIR = join(homedir(), ".agent-jones", "screenshots");
+const SHOTS_DIR = join(homedir(), ".agent-debut", "screenshots");
 
 // ———— Simulators ————
 
@@ -76,7 +76,7 @@ export async function screenshot(udid = "booted", outPath?: string): Promise<str
 // ———— Build & debug loop ————
 
 function logPath(projectDir: string) {
-  const dir = join(projectDir, ".jones");
+  const dir = join(projectDir, ".debut");
   mkdirSync(dir, { recursive: true });
   return join(dir, "build.log");
 }
@@ -100,7 +100,7 @@ export async function buildIosSim(projectDir: string): Promise<string> {
   // Capacitor layout first, then a bare Xcode project at the root.
   const capWs = join(projectDir, "ios", "App", "App.xcworkspace");
   const args = ["-sdk", "iphonesimulator", "-configuration", "Debug",
-    "-derivedDataPath", join(projectDir, ".jones", "DerivedData"), "build"];
+    "-derivedDataPath", join(projectDir, ".debut", "DerivedData"), "build"];
   if (existsSync(capWs)) {
     args.unshift("-workspace", capWs, "-scheme", "App");
   } else {
@@ -118,7 +118,7 @@ export async function buildIosSim(projectDir: string): Promise<string> {
     writeFileSync(logPath(projectDir), log);
     throw new Error("iOS build failed. Errors:\n" + extractErrors(log) + "\n\n(Full log via read_build_log.)");
   }
-  const products = join(projectDir, ".jones", "DerivedData", "Build", "Products", "Debug-iphonesimulator");
+  const products = join(projectDir, ".debut", "DerivedData", "Build", "Products", "Debug-iphonesimulator");
   const app = existsSync(products) ? readdirSync(products).find((f) => f.endsWith(".app")) : undefined;
   if (!app) throw new Error("Build succeeded but no .app found in " + products);
   return join(products, app);
@@ -142,16 +142,16 @@ export async function buildAndroid(projectDir: string): Promise<string> {
 
 // ———— Work protection ————
 
-const SNAPSHOT_FILE = ".jones/snapshot";
-export const WORK_BRANCH = "jones/workbench";
+const SNAPSHOT_FILE = ".debut/snapshot";
+export const WORK_BRANCH = "debut/workbench";
 
 async function git(dir: string, ...args: string[]) {
   return exec("git", ["-C", dir, ...args], { timeout: 120_000, maxBuffer: 16 * 1024 * 1024 });
 }
 
 /**
- * Guard a workspace before Jones changes anything:
- * switch to the jones/workbench branch (never main) and snapshot the tree
+ * Guard a workspace before Debut changes anything:
+ * switch to the debut/workbench branch (never main) and snapshot the tree
  * so restore_snapshot can undo everything with one call.
  */
 export async function protectWorkspace(dir: string): Promise<{ branch: string; snapshot: string } | null> {
@@ -162,15 +162,15 @@ export async function protectWorkspace(dir: string): Promise<{ branch: string; s
   }
   await git(dir, "checkout", "-B", WORK_BRANCH);
   await git(dir, "add", "-A");
-  await git(dir, "commit", "-m", "jones: snapshot before changes", "--no-verify").catch(() => {}); // clean tree is fine
+  await git(dir, "commit", "-m", "debut: snapshot before changes", "--no-verify").catch(() => {}); // clean tree is fine
   const { stdout } = await git(dir, "rev-parse", "HEAD");
   const sha = stdout.trim();
-  mkdirSync(join(dir, ".jones"), { recursive: true });
+  mkdirSync(join(dir, ".debut"), { recursive: true });
   writeFileSync(join(dir, SNAPSHOT_FILE), sha);
   return { branch: WORK_BRANCH, snapshot: sha };
 }
 
-/** Undo everything Jones did since the last snapshot. */
+/** Undo everything Debut did since the last snapshot. */
 export async function restoreSnapshot(dir: string): Promise<string> {
   const p = join(dir, SNAPSHOT_FILE);
   if (!existsSync(p)) throw new Error("No snapshot found — protect_workspace/mobilize_web_app hasn't run here.");

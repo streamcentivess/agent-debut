@@ -54,9 +54,9 @@ const handleSessionRequest = async (
 app.get("/mcp", handleSessionRequest);
 app.delete("/mcp", handleSessionRequest);
 
-app.get("/healthz", (_req, res) => res.json({ ok: true, name: "agent-jones" }));
+app.get("/healthz", (_req, res) => res.json({ ok: true, name: "agent-debut" }));
 
 const port = Number(process.env.PORT ?? 8787);
 app.listen(port, () => {
-  console.log(`agent-jones MCP server listening on http://localhost:${port}/mcp`);
+  console.log(`agent-debut MCP server listening on http://localhost:${port}/mcp`);
 });

@@ -1,7 +1,7 @@
-# Agent Jones — MCP server
+# Agent Debut — MCP server
 
 An autonomous App Store Connect operator exposed as an MCP server. Your agent
-builds the app; Agent Jones ships it.
+builds the app; Agent Debut ships it.
 
 ## Setup
 
@@ -21,7 +21,7 @@ npm install && npm run build
 **Stdio (local, for Claude Code / Cursor):**
 
 ```bash
-claude mcp add agent-jones -e ASC_KEY_ID=... -e ASC_ISSUER_ID=... -e ASC_KEY_PATH=... -- node /path/to/agent-jones/server/dist/index.js
+claude mcp add agent-debut -e ASC_KEY_ID=... -e ASC_ISSUER_ID=... -e ASC_KEY_PATH=... -- node /path/to/agent-debut/server/dist/index.js
 ```
 
 **Streamable HTTP (hosted, `https://your-host/mcp`):**
@@ -43,7 +43,7 @@ npm run start:http
 | `import_repo` | Clone a GitHub repo (Lovable, Emergent, Bolt, Replit, v0, …) into the workspace |
 | `analyze_web_app` | Detect framework, build command, web output dir, existing native shell |
 | `store_readiness_check` | Scan for App Store / Play rejection risks: web checkout vs IAP, account deletion, privacy policy, tracking, minimum functionality |
-| `mobilize_web_app` | Refactor a web app into a native shell: Capacitor install + config, build, add iOS/Android, sync (runs on `jones/workbench` branch with a pre-change snapshot) |
+| `mobilize_web_app` | Refactor a web app into a native shell: Capacitor install + config, build, add iOS/Android, sync (runs on `debut/workbench` branch with a pre-change snapshot) |
 | `build_app` | Compile iOS (xcodebuild → simulator) or Android (Gradle); failures return extracted compiler errors |
 | `read_build_log` | Tail of the last build log for debugging |
 | `run_in_simulator` | Boot an iPhone simulator, build/install the app, launch it |
@@ -53,7 +53,7 @@ npm run start:http
 
 ## Work protection
 
-- Jones only edits cloned workspaces, on a `jones/workbench` branch — never the user's branch.
+- Debut only edits cloned workspaces, on a `debut/workbench` branch — never the user's branch.
 - A snapshot commit is taken before changes; `restore_snapshot` undoes everything in one call.
 - `submit_for_review` requires `confirm: true` — irreversible store actions never happen implicitly.
 

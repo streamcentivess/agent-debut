@@ -37,7 +37,7 @@ export class AscClient {
     return this.request<T>("PATCH", path, body);
   }
 
-  // ---- Convenience wrappers over the endpoints Agent Jones uses most ----
+  // ---- Convenience wrappers over the endpoints Agent Debut uses most ----
 
   listApps() {
     return this.get<any>("/apps?limit=50&fields[apps]=name,bundleId,sku,primaryLocale");
