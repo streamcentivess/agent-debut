@@ -9,6 +9,16 @@ import {
   mobilize,
   storeReadinessScan,
 } from "./mobilize.js";
+import {
+  buildAndroid,
+  buildIosSim,
+  ensureBooted,
+  installAndLaunch,
+  lastBuildLog,
+  listSimulators,
+  restoreSnapshot,
+  screenshot,
+} from "./devtools.js";
 
 const exec = promisify(execFile);
 
@@ -118,9 +128,18 @@ export function createServer(): McpServer {
         version_id: z
           .string()
           .describe("appStoreVersions resource id (from get_app_status)"),
+        confirm: z
+          .boolean()
+          .default(false)
+          .describe("Must be true to actually submit — submitting to Apple review is irreversible."),
       },
     },
-    async ({ version_id }) => {
+    async ({ version_id, confirm }) => {
+      if (!confirm) {
+        return text(
+          "Submitting to Apple review is irreversible, so Jones asks for an explicit go-ahead. Verify the version's build and metadata with get_app_status, then call submit_for_review again with confirm: true."
+        );
+      }
       try {
         return text(await asc().submitForReview(version_id));
       } catch (e) {
@@ -270,6 +289,129 @@ export function createServer(): McpServer {
     async ({ project_dir, app_name, bundle_id, platforms }) => {
       try {
         return text(await mobilize(project_dir, app_name, bundle_id, platforms));
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "list_simulators",
+    {
+      title: "List iOS simulators",
+      description: "List the iOS simulators available on this Mac (name, udid, state, runtime).",
+      inputSchema: {},
+    },
+    async () => {
+      try {
+        return text(await listSimulators());
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "build_app",
+    {
+      title: "Build the app",
+      description:
+        "Compile the native app with the real toolchain — iOS via xcodebuild (simulator build) or Android via Gradle. On failure, returns the extracted compiler errors so they can be fixed and retried; the full log is available via read_build_log. On success returns the built artifact path.",
+      inputSchema: {
+        project_dir: z.string().describe("Absolute path to the project"),
+        platform: z.enum(["ios", "android"]).default("ios"),
+      },
+    },
+    async ({ project_dir, platform }) => {
+      try {
+        const artifact =
+          platform === "ios" ? await buildIosSim(project_dir) : await buildAndroid(project_dir);
+        return text({ ok: true, artifact });
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "read_build_log",
+    {
+      title: "Read the build log",
+      description:
+        "Return the tail of the most recent build log for a project — use this to debug a failed build_app or see full compiler output.",
+      inputSchema: {
+        project_dir: z.string().describe("Absolute path to the project"),
+        lines: z.number().int().min(10).max(2000).default(120),
+      },
+    },
+    async ({ project_dir, lines }) => {
+      try {
+        return text(lastBuildLog(project_dir, lines));
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "run_in_simulator",
+    {
+      title: "Run the app in a simulator",
+      description:
+        "See the app running: boots an iPhone simulator on this Mac (opens the Simulator window), builds the iOS app if needed, installs it, and launches it. Pass app_path to skip the build and install an already-built .app.",
+      inputSchema: {
+        project_dir: z.string().optional().describe("Project to build & run (omit if passing app_path)"),
+        app_path: z.string().optional().describe("Path to an already-built .app bundle"),
+        udid: z.string().optional().describe("Specific simulator udid (default: booted or newest iPhone)"),
+      },
+    },
+    async ({ project_dir, app_path, udid }) => {
+      try {
+        if (!project_dir && !app_path) throw new Error("Provide project_dir or app_path.");
+        const app = app_path ?? (await buildIosSim(project_dir!));
+        const sim = await ensureBooted(udid);
+        const bundleId = await installAndLaunch(app, sim.udid);
+        return text({ ok: true, simulator: sim.name, udid: sim.udid, bundleId, app });
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "simulator_screenshot",
+    {
+      title: "Screenshot the simulator",
+      description:
+        "Capture a PNG of the booted simulator's screen — for checking how the app looks, or producing App Store screenshots. Returns the saved file path.",
+      inputSchema: {
+        udid: z.string().optional().describe("Simulator udid (default: the booted one)"),
+        out_path: z.string().optional().describe("Where to save the PNG (default: ~/.agent-jones/screenshots)"),
+      },
+    },
+    async ({ udid, out_path }) => {
+      try {
+        return text({ ok: true, path: await screenshot(udid ?? "booted", out_path) });
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "restore_snapshot",
+    {
+      title: "Undo Jones's changes",
+      description:
+        "Work protection: roll a workspace back to the snapshot taken before Jones started changing it. Every mobilize_web_app run works on the jones/workbench branch and snapshots first, so this one call undoes everything since.",
+      inputSchema: {
+        project_dir: z.string().describe("Absolute path to the workspace to roll back"),
+      },
+    },
+    async ({ project_dir }) => {
+      try {
+        const sha = await restoreSnapshot(project_dir);
+        return text({ ok: true, restored_to: sha });
       } catch (e) {
         return errorText(e);
       }

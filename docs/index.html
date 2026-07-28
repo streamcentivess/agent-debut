@@ -245,6 +245,13 @@
   }
   .chip:hover { transform: translateY(-3px); color: var(--text); border-color: var(--accent-dim); }
   .compliance-row { display: flex; gap: 10px 18px; justify-content: center; flex-wrap: wrap; margin-top: 34px; }
+
+  /* Workbench */
+  .bench { border-top: 1px solid var(--border); }
+  .bench-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .bench-grid { grid-template-columns: 1fr; } }
+  .bench .feature { background: var(--surface); }
+  .bench .agent-note { margin-top: 30px; }
   .tick {
     font-size: 13.5px; color: var(--muted);
     border: 1px dashed var(--border); border-radius: 8px; padding: 6px 12px;
@@ -544,6 +551,38 @@
   </div>
 </section>
 
+<section class="bench" id="workbench">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>A real Mac workbench, built in</h2>
+      <p>Jones doesn't just fill in forms. It builds, runs, and debugs your app on real Apple tooling — and it can't hurt your code while it works.</p>
+    </div>
+    <div class="bench-grid">
+      <div class="feature">
+        <div class="f-icon">📱</div>
+        <h3>See your app running</h3>
+        <p>Say "show me my app" and Jones boots an iPhone simulator on a real Mac, installs your build, and launches it — before anything goes near the store.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">🔧</div>
+        <h3>Builds that fix themselves</h3>
+        <p>When a build fails, Jones reads the log, pulls out the exact error, and hands it to your AI to fix — then rebuilds. The loop runs until it's green.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">📸</div>
+        <h3>Screenshots from a real device screen</h3>
+        <p>Store-ready screenshots captured straight off the simulator — your actual app, on every screen size Apple asks for.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">🛡</div>
+        <h3>Your code can't get hurt</h3>
+        <p>Jones works on its own branch and snapshots your project before every change — one command undoes everything. And nothing irreversible, like submitting to Apple, happens without your explicit yes.</p>
+      </div>
+    </div>
+    <p class="agent-note">Bring your own AI — Jones works with Claude, GPT, Gemini, or whatever your tools already run.</p>
+  </div>
+</section>
+
 <section id="how">
   <div class="wrap">
     <div class="section-head">
@@ -636,6 +675,7 @@
           <li>2,500 AI credits included every month</li>
           <li>Unlimited App Store &amp; Google Play submissions</li>
           <li>Web app → mobile app conversion (Lovable, Emergent, Bolt &amp; any repo)</li>
+          <li>Build, run &amp; debug on real iPhone simulators</li>
           <li>Store-compliance refactors: IAP &amp; Play Billing, account deletion, privacy</li>
           <li>Screenshots, app icon &amp; ASO listing</li>
           <li>Certificates, signing, review &amp; rejections handled</li>

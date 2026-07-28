@@ -3,6 +3,7 @@ import { promisify } from "node:util";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
+import { protectWorkspace } from "./devtools.js";
 
 const exec = promisify(execFile);
 
@@ -204,6 +205,7 @@ export async function storeReadinessScan(dir: string): Promise<Finding[]> {
 export interface MobilizeResult {
   steps: string[];
   detection: Detection;
+  protection: { branch: string; snapshot: string } | null;
   nextSteps: string[];
 }
 
@@ -221,6 +223,10 @@ export async function mobilize(
   const steps: string[] = [];
   const detection = detectWebApp(dir);
   if (!detection.webDir) throw new Error("Could not detect a web app in " + dir);
+
+  // Work protection: never touch the user's branch; snapshot so one call undoes everything.
+  const protection = await protectWorkspace(dir);
+  if (protection) steps.push(`protected workspace: branch ${protection.branch}, snapshot ${protection.snapshot.slice(0, 8)}`);
   const run = async (cmd: string, args: string[], timeout = 900_000) => {
     await exec(cmd, args, { cwd: dir, timeout, maxBuffer: 32 * 1024 * 1024, env: { ...process.env, CI: "1" } });
     steps.push(`${cmd} ${args.join(" ")}`);
@@ -250,6 +256,7 @@ export async function mobilize(
   return {
     steps,
     detection,
+    protection,
     nextSteps: [
       "Run store_readiness_check and refactor any blockers (payments → IAP/Play Billing, account deletion, privacy policy).",
       "Generate app icons and splash screens (npx @capacitor/assets generate).",

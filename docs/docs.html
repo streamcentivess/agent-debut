@@ -113,6 +113,7 @@
       <a href="#web-to-mobile">Web app → mobile app</a>
       <a href="#prompts">Prompts that work</a>
       <a href="#tools">What Jones can do</a>
+      <a href="#safety">Is my code safe?</a>
       <a href="#credits">Credits</a>
       <a href="#help">Troubleshooting</a>
     </div>
@@ -262,8 +263,27 @@ url = "https://api.agentjones.app/mcp"</pre>
       <tr><td>analyze_web_app</td><td>Figure out what kind of web app it is</td></tr>
       <tr><td>store_readiness_check</td><td>Find anything the stores would reject</td></tr>
       <tr><td>mobilize_web_app</td><td>Wrap the web app into iOS + Android projects</td></tr>
+      <tr><td>build_app</td><td>Compile the app for iPhone or Android — errors come back explained</td></tr>
+      <tr><td>read_build_log</td><td>"Why did the build fail?"</td></tr>
+      <tr><td>run_in_simulator</td><td>"Show me my app running on an iPhone"</td></tr>
+      <tr><td>simulator_screenshot</td><td>Snap the simulator screen — great for store screenshots</td></tr>
+      <tr><td>list_simulators</td><td>Which iPhones are available to test on</td></tr>
+      <tr><td>restore_snapshot</td><td>Undo everything Jones changed, one command</td></tr>
       <tr><td>asc_request</td><td>Anything else on App Store Connect (IAP, pricing, …)</td></tr>
     </table>
+  </div>
+</section>
+
+<section id="safety">
+  <div class="wrap">
+    <h2>Is my code safe?</h2>
+    <p class="lead"><strong>Yes — Jones is built so it can move fast without being able to hurt your project.</strong></p>
+    <ul>
+      <li><strong>Its own copy.</strong> Jones works in a cloned workspace; your original repo is never edited in place.</li>
+      <li><strong>Its own branch.</strong> Every change lands on a <code class="inline">jones/workbench</code> branch — never your main branch.</li>
+      <li><strong>Snapshot first.</strong> Before touching anything, Jones saves a snapshot of your project. Say <em>"undo Jones's changes"</em> and everything rolls back in one step.</li>
+      <li><strong>Asks before the point of no return.</strong> Irreversible actions — like submitting to Apple review — never happen without your explicit yes.</li>
+    </ul>
   </div>
 </section>
 

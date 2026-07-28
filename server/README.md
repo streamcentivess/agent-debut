@@ -43,7 +43,19 @@ npm run start:http
 | `import_repo` | Clone a GitHub repo (Lovable, Emergent, Bolt, Replit, v0, …) into the workspace |
 | `analyze_web_app` | Detect framework, build command, web output dir, existing native shell |
 | `store_readiness_check` | Scan for App Store / Play rejection risks: web checkout vs IAP, account deletion, privacy policy, tracking, minimum functionality |
-| `mobilize_web_app` | Refactor a web app into a native shell: Capacitor install + config, build, add iOS/Android, sync |
+| `mobilize_web_app` | Refactor a web app into a native shell: Capacitor install + config, build, add iOS/Android, sync (runs on `jones/workbench` branch with a pre-change snapshot) |
+| `build_app` | Compile iOS (xcodebuild → simulator) or Android (Gradle); failures return extracted compiler errors |
+| `read_build_log` | Tail of the last build log for debugging |
+| `run_in_simulator` | Boot an iPhone simulator, build/install the app, launch it |
+| `simulator_screenshot` | PNG of the booted simulator screen (App Store screenshot source) |
+| `list_simulators` | Available iOS simulators on this Mac |
+| `restore_snapshot` | Work protection: roll the workspace back to the pre-change snapshot |
+
+## Work protection
+
+- Jones only edits cloned workspaces, on a `jones/workbench` branch — never the user's branch.
+- A snapshot commit is taken before changes; `restore_snapshot` undoes everything in one call.
+- `submit_for_review` requires `confirm: true` — irreversible store actions never happen implicitly.
 
 ## Notes
 
