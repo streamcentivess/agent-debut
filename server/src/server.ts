@@ -190,7 +190,7 @@ export function createServer(): McpServer {
         method: z.enum(["GET", "POST", "PATCH"]).default("GET"),
         path: z.string().describe("API path starting with /"),
         body: z
-          .record(z.unknown())
+          .record(z.string(), z.unknown())
           .optional()
           .describe("JSON body for POST/PATCH"),
       },

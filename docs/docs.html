@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="brand/favicon.svg" />
-<title>Agent Debut Docs — connect in 5 minutes</title>
+<title>Agent Debut Docs: connect in 5 minutes</title>
 <meta name="description" content="Plain-English guide to connecting Agent Debut to your coding agent and shipping your first app." />
 <style>
   :root {
@@ -125,7 +125,7 @@
   <div class="wrap">
     <h2>What is Debut?</h2>
     <p class="lead"><strong>Agent Debut is a co-worker for the app-store part of your app.</strong> Your coding agent (Claude, Cursor, Codex…) writes the code. Debut does everything Apple and Google make you do afterward: builds, signing, screenshots, listings, in-app purchases, review, and rejections.</p>
-    <p>You never learn App Store Connect. You just tell your agent what you want — <em>"put this on TestFlight"</em>, <em>"submit version 1.2"</em> — and the agent hands the work to Debut.</p>
+    <p>You never learn App Store Connect. You just tell your agent what you want, like <em>"put this on TestFlight"</em> or <em>"submit version 1.2"</em>, and the agent hands the work to Debut.</p>
     <div class="tip"><strong>Non-technical?</strong> That's fine. The app has a guided, step-by-step connect flow that does everything below for you with buttons instead of a terminal.</div>
   </div>
 </section>
@@ -133,7 +133,7 @@
 <section id="connect">
   <div class="wrap">
     <h2>Connect your agent (5 minutes)</h2>
-    <p>Debut speaks <strong>MCP</strong> (Model Context Protocol) — the standard way agents connect to outside tools. You connect once; after that your agent can see and use Debut in every conversation.</p>
+    <p>Debut speaks <strong>MCP</strong> (Model Context Protocol), the standard way agents connect to outside tools. You connect once; after that your agent can see and use Debut in every conversation.</p>
     <p>The universal way, which works with 20+ agents:</p>
     <pre>npx add-mcp https://api.agentdebut.app/mcp</pre>
     <p>Or pick your agent:</p>
@@ -199,9 +199,9 @@ url = "https://api.agentdebut.app/mcp"</pre>
 
     <h3>Then connect your accounts</h3>
     <ol>
-      <li><strong>App Store Connect</strong> — sign in once in the Debut app; this unlocks your 500 free credits. (No Apple account yet? Debut walks you through creating one — $99/yr from Apple.)</li>
-      <li><strong>Google Play</strong> (optional) — connect your Play Console the same way ($25 one-time from Google).</li>
-      <li><strong>GitHub</strong> (optional) — needed only for web→mobile conversion and builds from source.</li>
+      <li><strong>App Store Connect</strong>: sign in once in the Debut app, which unlocks your 500 free credits. (No Apple account yet? Debut walks you through creating one; it costs $99/yr from Apple.)</li>
+      <li><strong>Google Play</strong> (optional): connect your Play Console the same way ($25 one-time from Google).</li>
+      <li><strong>GitHub</strong> (optional): needed only for web→mobile conversion and builds from source.</li>
     </ol>
   </div>
 </section>
@@ -213,9 +213,9 @@ url = "https://api.agentdebut.app/mcp"</pre>
     <ol>
       <li><strong>Say what you want.</strong> In your agent, type: <em>"Use Debut to ship this app to TestFlight."</em></li>
       <li><strong>Debut builds and uploads.</strong> It clones your repo, builds, signs, and uploads. First time usually takes ~15 minutes.</li>
-      <li><strong>Check status anytime.</strong> Ask <em>"what's the status of my build?"</em> — Debut answers with the live state from Apple.</li>
+      <li><strong>Check status anytime.</strong> Ask <em>"what's the status of my build?"</em> and Debut answers with the live state from Apple.</li>
       <li><strong>Go to the store.</strong> Say <em>"submit it for review"</em>. Debut creates the version, attaches the build, fills the metadata, and submits.</li>
-      <li><strong>If Apple rejects it</strong> — say <em>"handle the rejection"</em>. Debut reads Apple's feedback, explains it in plain English, fixes what it can, and resubmits.</li>
+      <li><strong>If Apple rejects it</strong>, say <em>"handle the rejection"</em>. Debut reads Apple's feedback, explains it in plain English, fixes what it can, and resubmits.</li>
     </ol>
   </div>
 </section>
@@ -225,10 +225,10 @@ url = "https://api.agentdebut.app/mcp"</pre>
     <h2>Web app → mobile app</h2>
     <p class="lead">Built your app on <strong>Lovable, Emergent, Bolt, Replit, or v0</strong>? Debut turns it into a real iOS and Android app.</p>
     <ol>
-      <li><strong>Connect GitHub.</strong> Your builder already pushes your code to a GitHub repo — connect it to Debut.</li>
+      <li><strong>Connect GitHub.</strong> Your builder already pushes your code to a GitHub repo. Connect it to Debut.</li>
       <li><strong>Debut analyzes.</strong> It detects your framework and scans for the things Apple and Google reject: web checkout (must become in-app purchases), missing account deletion, missing privacy policy, and "it's just a website" risk.</li>
       <li><strong>Debut refactors.</strong> It wraps your app in a native shell, adds the iOS and Android projects, and hands your coding agent a fix list for anything that needs real code changes.</li>
-      <li><strong>Ship both stores.</strong> Icons, splash screens, signed builds — TestFlight and Play Console.</li>
+      <li><strong>Ship both stores.</strong> Icons, splash screens, signed builds, then TestFlight and Play Console.</li>
     </ol>
     <div class="tip"><strong>One prompt to start:</strong> <em>"Take github.com/me/my-app and get it ready for the App Store and Google Play."</em></div>
   </div>
@@ -240,7 +240,7 @@ url = "https://api.agentdebut.app/mcp"</pre>
     <p>Paste any of these into your agent (or your no-code tool's chat) once Debut is connected:</p>
     <div class="card">
       <p>• <em>"Ship the current branch to TestFlight and tell me when it's processed."</em></p>
-      <p>• <em>"Draft the App Store listing for 1.2 — name, subtitle, keywords, and what's new."</em></p>
+      <p>• <em>"Draft the App Store listing for 1.2: name, subtitle, keywords, and what's new."</em></p>
       <p>• <em>"We got rejected. Read the resolution center, explain why, and fix it."</em></p>
       <p>• <em>"Convert my Lovable app at github.com/me/app into an iOS and Android app."</em></p>
       <p>• <em>"Check my app for anything Apple or Google would reject before I submit."</em></p>
@@ -252,7 +252,7 @@ url = "https://api.agentdebut.app/mcp"</pre>
 <section id="tools">
   <div class="wrap">
     <h2>What Debut can do</h2>
-    <p>These are the tools your agent sees. You never call them yourself — your agent picks the right one from your plain-English request.</p>
+    <p>These are the tools your agent sees. You never call them yourself. Your agent picks the right one from your plain-English request.</p>
     <table>
       <tr><th>Tool</th><th>In plain English</th></tr>
       <tr><td>list_apps</td><td>"What apps do I have?"</td></tr>
@@ -264,10 +264,10 @@ url = "https://api.agentdebut.app/mcp"</pre>
       <tr><td>analyze_web_app</td><td>Figure out what kind of web app it is</td></tr>
       <tr><td>store_readiness_check</td><td>Find anything the stores would reject</td></tr>
       <tr><td>mobilize_web_app</td><td>Wrap the web app into iOS + Android projects</td></tr>
-      <tr><td>build_app</td><td>Compile the app for iPhone or Android — errors come back explained</td></tr>
+      <tr><td>build_app</td><td>Compile the app for iPhone or Android, with errors explained</td></tr>
       <tr><td>read_build_log</td><td>"Why did the build fail?"</td></tr>
       <tr><td>run_in_simulator</td><td>"Show me my app running on an iPhone"</td></tr>
-      <tr><td>simulator_screenshot</td><td>Snap the simulator screen — great for store screenshots</td></tr>
+      <tr><td>simulator_screenshot</td><td>Snap the simulator screen, great for store screenshots</td></tr>
       <tr><td>list_simulators</td><td>Which iPhones are available to test on</td></tr>
       <tr><td>restore_snapshot</td><td>Undo everything Debut changed, one command</td></tr>
       <tr><td>asc_request</td><td>Anything else on App Store Connect (IAP, pricing, …)</td></tr>
@@ -278,12 +278,12 @@ url = "https://api.agentdebut.app/mcp"</pre>
 <section id="safety">
   <div class="wrap">
     <h2>Is my code safe?</h2>
-    <p class="lead"><strong>Yes — Debut is built so it can move fast without being able to hurt your project.</strong></p>
+    <p class="lead"><strong>Yes. Debut is built so it can move fast without being able to hurt your project.</strong></p>
     <ul>
       <li><strong>Its own copy.</strong> Debut works in a cloned workspace; your original repo is never edited in place.</li>
-      <li><strong>Its own branch.</strong> Every change lands on a <code class="inline">debut/workbench</code> branch — never your main branch.</li>
+      <li><strong>Its own branch.</strong> Every change lands on a <code class="inline">debut/workbench</code> branch, never your main branch.</li>
       <li><strong>Snapshot first.</strong> Before touching anything, Debut saves a snapshot of your project. Say <em>"undo Debut's changes"</em> and everything rolls back in one step.</li>
-      <li><strong>Asks before the point of no return.</strong> Irreversible actions — like submitting to Apple review — never happen without your explicit yes.</li>
+      <li><strong>Asks before the point of no return.</strong> Irreversible actions, like submitting to Apple review, never happen without your explicit yes.</li>
     </ul>
   </div>
 </section>
@@ -291,7 +291,7 @@ url = "https://api.agentdebut.app/mcp"</pre>
 <section id="credits">
   <div class="wrap">
     <h2>Credits</h2>
-    <p>Credits are what Debut spends when it works — a build costs more than a status check. You get <strong>500 free credits</strong> for your first 30 days when you connect App Store Connect. <strong>Pro ($29.99/mo)</strong> includes 2,500 credits every month, and optional auto top-ups add 2,000 credits for $15 with a monthly cap you control. Nothing ever stops mid-task. Details on the <a href="index.html#pricing" style="color:var(--accent)">pricing page</a>.</p>
+    <p>Credits are what Debut spends when it works. A build costs more than a status check. You get <strong>500 free credits</strong> for your first 30 days when you connect App Store Connect. <strong>Pro ($29.99/mo)</strong> includes 2,500 credits every month, and optional auto top-ups add 2,000 credits for $15 with a monthly cap you control. Nothing ever stops mid-task. Details on the <a href="index.html#pricing" style="color:var(--accent)">pricing page</a>.</p>
   </div>
 </section>
 
@@ -299,13 +299,13 @@ url = "https://api.agentdebut.app/mcp"</pre>
   <div class="wrap">
     <h2>Troubleshooting</h2>
     <h3>My agent doesn't see Debut</h3>
-    <p>Restart the agent after adding the server — most only load MCP connections on startup. Then ask it to "list debut's tools".</p>
+    <p>Restart the agent after adding the server. Most only load MCP connections on startup. Then ask it to "list debut's tools".</p>
     <h3>"Missing App Store Connect credentials"</h3>
     <p>You haven't connected your Apple account yet. Open the Debut app and finish the App Store Connect step, or set your API key if you're self-hosting.</p>
     <h3>The build failed</h3>
-    <p>Ask your agent: <em>"show me debut's build error and fix it."</em> That's the whole workflow — the agent reads the log, changes the code, and re-runs the build.</p>
+    <p>Ask your agent: <em>"show me debut's build error and fix it."</em> That's the whole workflow: the agent reads the log, changes the code, and re-runs the build.</p>
     <h3>Anything else</h3>
-    <p>Email <a href="mailto:support@agentdebut.app" style="color:var(--accent)">support@agentdebut.app</a> — Pro gets priority.</p>
+    <p>Email <a href="mailto:support@agentdebut.app" style="color:var(--accent)">support@agentdebut.app</a>. Pro gets priority.</p>
   </div>
 </section>
 
