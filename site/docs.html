@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent Smith Docs — connect in 5 minutes</title>
+<meta name="description" content="Plain-English guide to connecting Agent Smith to your coding agent and shipping your first app." />
+<style>
+  :root {
+    --bg: #0a0b0d; --surface: #111318; --surface-2: #171a21; --border: #23262e;
+    --text: #f2f4f8; --muted: #9aa1ad; --accent: #38e07b; --accent-dim: #1e7a45;
+    --radius: 14px;
+    --font: "SF Pro Display", -apple-system, "Segoe UI", Inter, system-ui, sans-serif;
+    --mono: "SF Mono", ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; line-height: 1.65; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+  nav {
+    position: sticky; top: 0; z-index: 50; backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner { max-width: 1080px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; text-decoration: none; color: var(--text); }
+  .logo-mark { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-dim)); display: grid; place-items: center; color: #04140b; font-weight: 800; font-size: 15px; font-family: var(--mono); }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14.5px; }
+  .nav-links a:hover { color: var(--text); }
+
+  header.docs-head { padding: 64px 0 20px; }
+  header.docs-head h1 { font-size: clamp(30px, 5vw, 44px); letter-spacing: -0.03em; font-weight: 740; }
+  header.docs-head p { color: var(--muted); margin-top: 10px; font-size: 17px; }
+
+  .toc { display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 8px; }
+  .toc a {
+    font-size: 13px; color: var(--muted); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px;
+    transition: color .15s, border-color .15s;
+  }
+  .toc a:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+  section { padding: 40px 0 8px; }
+  h2 { font-size: 24px; letter-spacing: -0.02em; font-weight: 700; margin-bottom: 14px; scroll-margin-top: 90px; }
+  h3 { font-size: 16.5px; font-weight: 650; margin: 22px 0 8px; }
+  p, li { color: var(--muted); font-size: 15px; }
+  p strong, li strong { color: var(--text); }
+  section > .lead { font-size: 16px; }
+  ol, ul { padding-left: 22px; margin: 10px 0; }
+  li { margin-bottom: 8px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px 22px; margin: 14px 0;
+  }
+  pre {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; overflow-x: auto; margin: 10px 0;
+    font-family: var(--mono); font-size: 13px; color: var(--text); line-height: 1.6;
+  }
+  code.inline { font-family: var(--mono); font-size: 13px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; color: var(--text); }
+
+  details.agent {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 0 20px; margin-bottom: 10px;
+  }
+  details.agent[open] { border-color: var(--accent-dim); }
+  details.agent summary { cursor: pointer; padding: 15px 0; font-weight: 650; font-size: 15px; color: var(--text); list-style: none; display: flex; justify-content: space-between; }
+  details.agent summary::-webkit-details-marker { display: none; }
+  details.agent summary::after { content: "+"; color: var(--accent); font-size: 19px; }
+  details.agent[open] summary::after { content: "–"; }
+  details.agent .inner { padding-bottom: 18px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border: 1px solid var(--border); }
+  th { background: var(--surface); color: var(--text); font-weight: 650; }
+  td { color: var(--muted); }
+  td:first-child { font-family: var(--mono); font-size: 13px; color: var(--accent); white-space: nowrap; }
+
+  .tip {
+    border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 6%, transparent);
+    border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 14px 0; font-size: 14px; color: var(--muted);
+  }
+  .tip strong { color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); margin-top: 70px; padding: 36px 0; text-align: center; color: var(--muted); font-size: 13.5px; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="index.html"><span class="logo-mark">S</span> Agent Smith</a>
+    <div class="nav-links">
+      <a href="index.html#features">Features</a>
+      <a href="index.html#pricing">Pricing</a>
+      <a href="index.html#install">Get started</a>
+    </div>
+  </div>
+</nav>
+
+<header class="docs-head">
+  <div class="wrap">
+    <h1>Docs</h1>
+    <p>Everything here is written so a non-technical founder can follow it. If you can copy and paste, you can ship an app.</p>
+    <div class="toc">
+      <a href="#what">What is Smith?</a>
+      <a href="#connect">Connect your agent</a>
+      <a href="#first-ship">Ship your first app</a>
+      <a href="#web-to-mobile">Web app → mobile app</a>
+      <a href="#prompts">Prompts that work</a>
+      <a href="#tools">What Smith can do</a>
+      <a href="#credits">Credits</a>
+      <a href="#help">Troubleshooting</a>
+    </div>
+  </div>
+</header>
+
+<section id="what">
+  <div class="wrap">
+    <h2>What is Smith?</h2>
+    <p class="lead"><strong>Agent Smith is a co-worker for the app-store part of your app.</strong> Your coding agent (Claude, Cursor, Codex…) writes the code. Smith does everything Apple and Google make you do afterward: builds, signing, screenshots, listings, in-app purchases, review, and rejections.</p>
+    <p>You never learn App Store Connect. You just tell your agent what you want — <em>"put this on TestFlight"</em>, <em>"submit version 1.2"</em> — and the agent hands the work to Smith.</p>
+    <div class="tip"><strong>Non-technical?</strong> That's fine. The app has a guided, step-by-step connect flow that does everything below for you with buttons instead of a terminal.</div>
+  </div>
+</section>
+
+<section id="connect">
+  <div class="wrap">
+    <h2>Connect your agent (5 minutes)</h2>
+    <p>Smith speaks <strong>MCP</strong> (Model Context Protocol) — the standard way agents connect to outside tools. You connect once; after that your agent can see and use Smith in every conversation.</p>
+    <p>The universal way, which works with 20+ agents:</p>
+    <pre>npx add-mcp https://api.agentsmith.app/mcp</pre>
+    <p>Or pick your agent:</p>
+
+    <details class="agent">
+      <summary>Claude Code</summary>
+      <div class="inner">
+        <p>Open your terminal in any project and run:</p>
+        <pre>claude mcp add --transport http smith https://api.agentsmith.app/mcp</pre>
+        <p>Then start Claude Code and type <code class="inline">"list my apps with smith"</code> to confirm it's connected.</p>
+      </div>
+    </details>
+
+    <details class="agent">
+      <summary>Claude Desktop &amp; claude.ai</summary>
+      <div class="inner">
+        <ol>
+          <li>Open <strong>Settings → Connectors</strong>.</li>
+          <li>Click <strong>Add custom connector</strong>.</li>
+          <li>Name it <strong>Smith</strong> and paste <code class="inline">https://api.agentsmith.app/mcp</code>.</li>
+          <li>Click <strong>Add</strong>, then approve the connection when asked.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="agent">
+      <summary>Cursor</summary>
+      <div class="inner">
+        <p>Create (or open) the file <code class="inline">.cursor/mcp.json</code> in your project and add:</p>
+        <pre>{
+  "mcpServers": {
+    "smith": { "url": "https://api.agentsmith.app/mcp" }
+  }
+}</pre>
+        <p>Restart Cursor. Smith appears under <strong>Settings → MCP</strong>.</p>
+      </div>
+    </details>
+
+    <details class="agent">
+      <summary>Codex (OpenAI)</summary>
+      <div class="inner">
+        <p>Add this to <code class="inline">~/.codex/config.toml</code>:</p>
+        <pre>[mcp_servers.smith]
+url = "https://api.agentsmith.app/mcp"</pre>
+      </div>
+    </details>
+
+    <details class="agent">
+      <summary>VS Code + Copilot Chat</summary>
+      <div class="inner">
+        <p>Run this in a terminal:</p>
+        <pre>code --add-mcp '{"name":"smith","url":"https://api.agentsmith.app/mcp"}'</pre>
+        <p>Or add the same server in <strong>Settings → MCP Servers</strong>.</p>
+      </div>
+    </details>
+
+    <details class="agent">
+      <summary>Something else (Replit, Cline, Windsurf, …)</summary>
+      <div class="inner">
+        <p>Any MCP-capable agent works. Look for "MCP servers" in its settings and paste <code class="inline">https://api.agentsmith.app/mcp</code>, or use the universal command at the top of this section.</p>
+      </div>
+    </details>
+
+    <h3>Then connect your accounts</h3>
+    <ol>
+      <li><strong>App Store Connect</strong> — sign in once in the Smith app; this unlocks your 500 free credits. (No Apple account yet? Smith walks you through creating one — $99/yr from Apple.)</li>
+      <li><strong>Google Play</strong> (optional) — connect your Play Console the same way ($25 one-time from Google).</li>
+      <li><strong>GitHub</strong> (optional) — needed only for web→mobile conversion and builds from source.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="first-ship">
+  <div class="wrap">
+    <h2>Ship your first app</h2>
+    <p>Once connected, shipping is a conversation. A typical first run:</p>
+    <ol>
+      <li><strong>Say what you want.</strong> In your agent, type: <em>"Use Smith to ship this app to TestFlight."</em></li>
+      <li><strong>Smith builds and uploads.</strong> It clones your repo, builds, signs, and uploads. First time usually takes ~15 minutes.</li>
+      <li><strong>Check status anytime.</strong> Ask <em>"what's the status of my build?"</em> — Smith answers with the live state from Apple.</li>
+      <li><strong>Go to the store.</strong> Say <em>"submit it for review"</em>. Smith creates the version, attaches the build, fills the metadata, and submits.</li>
+      <li><strong>If Apple rejects it</strong> — say <em>"handle the rejection"</em>. Smith reads Apple's feedback, explains it in plain English, fixes what it can, and resubmits.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="web-to-mobile">
+  <div class="wrap">
+    <h2>Web app → mobile app</h2>
+    <p class="lead">Built your app on <strong>Lovable, Emergent, Bolt, Replit, or v0</strong>? Smith turns it into a real iOS and Android app.</p>
+    <ol>
+      <li><strong>Connect GitHub.</strong> Your builder already pushes your code to a GitHub repo — connect it to Smith.</li>
+      <li><strong>Smith analyzes.</strong> It detects your framework and scans for the things Apple and Google reject: web checkout (must become in-app purchases), missing account deletion, missing privacy policy, and "it's just a website" risk.</li>
+      <li><strong>Smith refactors.</strong> It wraps your app in a native shell, adds the iOS and Android projects, and hands your coding agent a fix list for anything that needs real code changes.</li>
+      <li><strong>Ship both stores.</strong> Icons, splash screens, signed builds — TestFlight and Play Console.</li>
+    </ol>
+    <div class="tip"><strong>One prompt to start:</strong> <em>"Take github.com/me/my-app and get it ready for the App Store and Google Play."</em></div>
+  </div>
+</section>
+
+<section id="prompts">
+  <div class="wrap">
+    <h2>Prompts that work</h2>
+    <p>Paste any of these into your agent (or your no-code tool's chat) once Smith is connected:</p>
+    <div class="card">
+      <p>• <em>"Ship the current branch to TestFlight and tell me when it's processed."</em></p>
+      <p>• <em>"Draft the App Store listing for 1.2 — name, subtitle, keywords, and what's new."</em></p>
+      <p>• <em>"We got rejected. Read the resolution center, explain why, and fix it."</em></p>
+      <p>• <em>"Convert my Lovable app at github.com/me/app into an iOS and Android app."</em></p>
+      <p>• <em>"Check my app for anything Apple or Google would reject before I submit."</em></p>
+      <p>• <em>"Set up a $4.99/month subscription called Pro in all territories."</em></p>
+    </div>
+  </div>
+</section>
+
+<section id="tools">
+  <div class="wrap">
+    <h2>What Smith can do</h2>
+    <p>These are the tools your agent sees. You never call them yourself — your agent picks the right one from your plain-English request.</p>
+    <table>
+      <tr><th>Tool</th><th>In plain English</th></tr>
+      <tr><td>list_apps</td><td>"What apps do I have?"</td></tr>
+      <tr><td>get_app_status</td><td>"What's the state of my builds and review?"</td></tr>
+      <tr><td>stage_build</td><td>Build, sign, and upload to TestFlight</td></tr>
+      <tr><td>create_app_store_version</td><td>Start a new release (e.g. 1.2.0)</td></tr>
+      <tr><td>submit_for_review</td><td>Send the release to Apple</td></tr>
+      <tr><td>import_repo</td><td>Pull in your GitHub repo (Lovable, Bolt, …)</td></tr>
+      <tr><td>analyze_web_app</td><td>Figure out what kind of web app it is</td></tr>
+      <tr><td>store_readiness_check</td><td>Find anything the stores would reject</td></tr>
+      <tr><td>mobilize_web_app</td><td>Wrap the web app into iOS + Android projects</td></tr>
+      <tr><td>asc_request</td><td>Anything else on App Store Connect (IAP, pricing, …)</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="credits">
+  <div class="wrap">
+    <h2>Credits</h2>
+    <p>Credits are what Smith spends when it works — a build costs more than a status check. You get <strong>500 free credits</strong> for your first 30 days when you connect App Store Connect. <strong>Pro ($29.99/mo)</strong> includes 2,500 credits every month, and optional auto top-ups add 2,000 credits for $15 with a monthly cap you control. Nothing ever stops mid-task. Details on the <a href="index.html#pricing" style="color:var(--accent)">pricing page</a>.</p>
+  </div>
+</section>
+
+<section id="help">
+  <div class="wrap">
+    <h2>Troubleshooting</h2>
+    <h3>My agent doesn't see Smith</h3>
+    <p>Restart the agent after adding the server — most only load MCP connections on startup. Then ask it to "list smith's tools".</p>
+    <h3>"Missing App Store Connect credentials"</h3>
+    <p>You haven't connected your Apple account yet. Open the Smith app and finish the App Store Connect step, or set your API key if you're self-hosting.</p>
+    <h3>The build failed</h3>
+    <p>Ask your agent: <em>"show me smith's build error and fix it."</em> That's the whole workflow — the agent reads the log, changes the code, and re-runs the build.</p>
+    <h3>Anything else</h3>
+    <p>Email <a href="mailto:support@agentsmith.app" style="color:var(--accent)">support@agentsmith.app</a> — Pro gets priority.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">© 2026 Agent Smith · <a href="index.html">Home</a> · <a href="index.html#pricing">Pricing</a></div>
+</footer>
+
+</body>
+</html>

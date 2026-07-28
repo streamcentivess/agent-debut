@@ -15,9 +15,12 @@
     --muted: #9aa1ad;
     --accent: #38e07b;
     --accent-dim: #1e7a45;
+    --red: #ef4444;
+    --blue: #3b82f6;
     --radius: 14px;
     --font: "SF Pro Display", -apple-system, "Segoe UI", Inter, system-ui, sans-serif;
     --mono: "SF Mono", ui-monospace, Menlo, monospace;
+    --ease: cubic-bezier(.22,.9,.24,1);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -27,8 +30,17 @@
     font-family: var(--font);
     -webkit-font-smoothing: antialiased;
     line-height: 1.55;
+    overflow-x: hidden;
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Scroll-reveal machinery */
+  .reveal { opacity: 0; transform: translateY(30px) scale(.985); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: var(--d, 0s); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    * { animation: none !important; }
+  }
 
   /* Nav */
   nav {
@@ -45,54 +57,63 @@
     display: grid; place-items: center;
     color: #04140b; font-weight: 800; font-size: 15px; font-family: var(--mono);
   }
-  .nav-links { display: flex; gap: 26px; align-items: center; }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
   .nav-links a { color: var(--muted); text-decoration: none; font-size: 14.5px; transition: color .15s; }
   .nav-links a:hover { color: var(--text); }
+  @media (max-width: 720px) { .nav-links a:not(.btn) { display: none; } }
   .btn {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 10px 20px; border-radius: 10px;
     font-size: 14.5px; font-weight: 600; text-decoration: none;
-    transition: transform .12s, box-shadow .12s, background .15s;
+    transition: transform .15s var(--ease), box-shadow .15s;
     cursor: pointer; border: none; font-family: inherit;
   }
   .btn-primary { background: var(--accent); color: #04140b; }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(56,224,123,.35); }
+  .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 30px rgba(56,224,123,.4); }
   .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
-  .btn-ghost:hover { background: var(--surface); }
+  .btn-ghost:hover { background: var(--surface); transform: translateY(-2px); }
 
-  /* Hero */
+  /* Hero + digital rain */
   .hero { padding: 110px 0 70px; text-align: center; position: relative; overflow: hidden; }
+  #rain { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .32; pointer-events: none; transition: opacity 1.2s; }
+  #rain.burst { opacity: .85; }
   .hero::before {
     content: ""; position: absolute; inset: -40% -20% auto;
     height: 620px; pointer-events: none;
     background: radial-gradient(ellipse 55% 45% at 50% 0%, rgba(56,224,123,.14), transparent 70%);
   }
+  .hero .wrap { position: relative; z-index: 2; }
   .eyebrow {
     display: inline-flex; align-items: center; gap: 8px;
     font-size: 13px; color: var(--accent); font-weight: 600;
     border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
     background: color-mix(in srgb, var(--accent) 8%, transparent);
     padding: 6px 14px; border-radius: 999px; margin-bottom: 28px;
+    animation: eyebrowIn 1s var(--ease) both;
   }
+  @keyframes eyebrowIn { from { opacity: 0; transform: translateY(-14px); } }
   h1 {
     font-size: clamp(42px, 7vw, 76px);
     line-height: 1.04; letter-spacing: -0.035em; font-weight: 750;
+    animation: heroIn 1s var(--ease) both .1s;
   }
-  h1 .accent { color: var(--accent); }
+  @keyframes heroIn { from { opacity: 0; transform: translateY(26px) scale(.97); } }
+  h1 .accent { color: var(--accent); font-family: inherit; }
+  h1 .accent.decoding { font-family: var(--mono); letter-spacing: -0.05em; }
   .sub {
     margin: 26px auto 0; max-width: 620px;
     font-size: clamp(16px, 2.2vw, 19px); color: var(--muted);
+    animation: heroIn 1s var(--ease) both .25s;
   }
   .sub strong { color: var(--text); font-weight: 600; }
-  .hero-ctas { margin-top: 38px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .hero-ctas { margin-top: 38px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; animation: heroIn 1s var(--ease) both .4s; }
 
-  /* Install snippet */
   .snippet {
     margin: 46px auto 0; max-width: 560px;
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     padding: 14px 18px; font-family: var(--mono); font-size: 14px;
-    text-align: left;
+    text-align: left; animation: heroIn 1s var(--ease) both .55s;
   }
   .snippet code .p { color: var(--muted); }
   .snippet code .c { color: var(--accent); }
@@ -100,34 +121,37 @@
     flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--border);
     color: var(--muted); border-radius: 8px; padding: 7px 12px;
     font-size: 12.5px; cursor: pointer; font-family: var(--font); font-weight: 600;
-    transition: color .15s, border-color .15s;
+    transition: color .15s, border-color .15s, transform .1s;
   }
   .copy-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
+  .copy-btn:active { transform: scale(.94); }
 
   /* Sections */
   section { padding: 84px 0; }
   .section-head { text-align: center; margin-bottom: 52px; }
   .section-head h2 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.03em; font-weight: 720; }
-  .section-head p { color: var(--muted); margin-top: 12px; font-size: 16.5px; }
+  .section-head p { color: var(--muted); margin-top: 12px; font-size: 16.5px; max-width: 640px; margin-inline: auto; }
 
   /* Agent picker */
-  .agent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .agent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; perspective: 1200px; }
   @media (max-width: 800px) { .agent-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 520px) { .agent-grid { grid-template-columns: 1fr; } }
   .agent-card {
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 24px 22px; text-align: left; text-decoration: none; color: var(--text);
     display: flex; flex-direction: column; gap: 6px;
-    transition: border-color .15s, transform .15s, background .15s;
+    transition: border-color .2s, background .2s, transform .2s var(--ease), box-shadow .2s;
+    transform-style: preserve-3d; will-change: transform;
   }
-  .agent-card:hover { border-color: var(--accent-dim); transform: translateY(-2px); background: var(--surface-2); }
+  .agent-card:hover { border-color: var(--accent-dim); background: var(--surface-2); box-shadow: 0 18px 50px rgba(0,0,0,.5); }
   .agent-card .icon {
     width: 40px; height: 40px; border-radius: 10px; margin-bottom: 10px;
     background: var(--surface-2); border: 1px solid var(--border);
     display: grid; place-items: center; font-size: 19px;
+    transform: translateZ(24px);
   }
-  .agent-card h3 { font-size: 16.5px; font-weight: 650; letter-spacing: -0.01em; }
-  .agent-card p { font-size: 13.5px; color: var(--muted); }
+  .agent-card h3 { font-size: 16.5px; font-weight: 650; letter-spacing: -0.01em; transform: translateZ(16px); }
+  .agent-card p { font-size: 13.5px; color: var(--muted); transform: translateZ(10px); }
   .agent-note { text-align: center; margin-top: 28px; color: var(--muted); font-size: 14px; }
   .agent-note a { color: var(--accent); text-decoration: none; }
 
@@ -137,16 +161,100 @@
   @media (max-width: 800px) { .feature-grid { grid-template-columns: 1fr; } }
   .feature {
     background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 26px 24px;
+    padding: 26px 24px; transition: transform .2s var(--ease), border-color .2s;
   }
+  .feature:hover { transform: translateY(-4px); border-color: var(--accent-dim); }
   .feature .f-icon { font-size: 22px; margin-bottom: 14px; color: var(--accent); }
   .feature h3 { font-size: 16.5px; font-weight: 650; margin-bottom: 8px; letter-spacing: -0.01em; }
   .feature p { font-size: 14px; color: var(--muted); }
 
+  /* ——— The Choice (red pill / blue pill) ——— */
+  .choice { position: relative; overflow: hidden; border-top: 1px solid var(--border); }
+  .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 860px; margin: 0 auto; perspective: 1400px; }
+  @media (max-width: 720px) { .choice-grid { grid-template-columns: 1fr; } }
+  .pill-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+    padding: 40px 30px 34px; text-align: center; cursor: pointer;
+    transition: transform .25s var(--ease), border-color .25s, box-shadow .25s;
+    transform-style: preserve-3d; position: relative; user-select: none;
+  }
+  .pill-card.blue:hover { border-color: color-mix(in srgb, var(--blue) 55%, transparent); box-shadow: 0 24px 70px rgba(59,130,246,.22); }
+  .pill-card.red:hover  { border-color: color-mix(in srgb, var(--red) 55%, transparent);  box-shadow: 0 24px 70px rgba(239,68,68,.25); }
+  .pill {
+    width: 150px; height: 60px; border-radius: 999px; margin: 0 auto 26px;
+    position: relative; transform: rotate(-18deg) translateZ(40px);
+    animation: pillFloat 4.5s ease-in-out infinite;
+    box-shadow: 0 22px 40px rgba(0,0,0,.55);
+  }
+  .pill-card.red .pill { animation-delay: -2.2s; }
+  @keyframes pillFloat { 50% { transform: rotate(-14deg) translateZ(40px) translateY(-10px); } }
+  .pill.blue-pill { background: radial-gradient(120% 160% at 30% 20%, #93c5fd, var(--blue) 45%, #1e3a8a 95%); }
+  .pill.red-pill  { background: radial-gradient(120% 160% at 30% 20%, #fca5a5, var(--red) 45%, #7f1d1d 95%); }
+  .pill::before {
+    content: ""; position: absolute; left: 14%; top: 12%;
+    width: 44%; height: 30%; border-radius: 999px;
+    background: rgba(255,255,255,.75); filter: blur(4px);
+  }
+  .pill::after {
+    content: ""; position: absolute; left: 50%; top: 6%; bottom: 6%;
+    width: 1.5px; background: rgba(0,0,0,.25);
+  }
+  .pill-card h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+  .pill-card .tag { font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; display: block; margin-bottom: 10px; }
+  .pill-card.blue .tag { color: var(--blue); }
+  .pill-card.red .tag { color: var(--red); }
+  .pill-card p { color: var(--muted); font-size: 14px; margin-top: 10px; }
+  .pill-card .take { margin-top: 20px; display: inline-block; font-size: 13.5px; font-weight: 650; padding: 9px 22px; border-radius: 999px; border: 1px solid var(--border); transition: background .2s, color .2s; }
+  .pill-card.blue:hover .take { background: var(--blue); color: #fff; border-color: transparent; }
+  .pill-card.red:hover  .take { background: var(--red);  color: #fff; border-color: transparent; }
+
+  .choice-result { max-width: 720px; margin: 34px auto 0; display: none; text-align: center; }
+  .choice-result.show { display: block; animation: resultIn .7s var(--ease) both; }
+  @keyframes resultIn { from { opacity: 0; transform: translateY(24px) scale(.97); } }
+  .choice-result .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 36px 30px; position: relative; overflow: hidden; }
+  .choice-result.red-side .panel { border-color: color-mix(in srgb, var(--red) 40%, var(--border)); }
+  .choice-result h3 { font-size: 22px; letter-spacing: -0.02em; }
+  .choice-result p { color: var(--muted); margin: 10px 0 22px; }
+  .again { background: none; border: none; color: var(--muted); font-size: 13px; margin-top: 16px; cursor: pointer; text-decoration: underline; font-family: inherit; }
+
+  /* Many hands, all working at once */
+  .hands-stage { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+  .hand-chip {
+    position: absolute; left: 50%; top: 55%;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 8px 16px;
+    font-family: var(--mono); font-size: 12px; color: var(--text); white-space: nowrap;
+    animation: handFly 2.4s var(--ease) forwards;
+    box-shadow: 0 10px 32px rgba(0,0,0,.55);
+  }
+  .hand-chip .h { font-size: 16px; animation: handWork .35s ease-in-out infinite alternate; }
+  @keyframes handWork { to { transform: rotate(22deg) translateY(-2px); } }
+  @keyframes handFly {
+    0% { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
+    12% { opacity: 1; }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--fx)), calc(-50% + var(--fy))) scale(1.06) rotate(var(--fr)); }
+  }
+
+  /* Web → mobile */
+  .builder-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .chip {
+    padding: 8px 18px; border-radius: 999px; font-size: 14px; font-weight: 600;
+    background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+    transition: transform .2s var(--ease), color .2s, border-color .2s;
+  }
+  .chip:hover { transform: translateY(-3px); color: var(--text); border-color: var(--accent-dim); }
+  .compliance-row { display: flex; gap: 10px 18px; justify-content: center; flex-wrap: wrap; margin-top: 34px; }
+  .tick {
+    font-size: 13.5px; color: var(--muted);
+    border: 1px dashed var(--border); border-radius: 8px; padding: 6px 12px;
+  }
+
   /* How it works */
   .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: step; }
   @media (max-width: 800px) { .steps { grid-template-columns: 1fr; } }
-  .step { padding: 26px 24px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  .step { padding: 26px 24px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); transition: transform .2s var(--ease), border-color .2s; }
+  .step:hover { transform: translateY(-4px); border-color: var(--accent-dim); }
   .step::before {
     counter-increment: step; content: "0" counter(step);
     font-family: var(--mono); color: var(--accent); font-size: 13px; font-weight: 700;
@@ -154,18 +262,6 @@
   }
   .step h3 { font-size: 16px; font-weight: 650; margin-bottom: 8px; }
   .step p { font-size: 14px; color: var(--muted); }
-
-  /* Web → mobile */
-  .builder-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .chip {
-    padding: 8px 18px; border-radius: 999px; font-size: 14px; font-weight: 600;
-    background: var(--surface); border: 1px solid var(--border); color: var(--muted);
-  }
-  .compliance-row { display: flex; gap: 10px 18px; justify-content: center; flex-wrap: wrap; margin-top: 34px; }
-  .tick {
-    font-size: 13.5px; color: var(--muted);
-    border: 1px dashed var(--border); border-radius: 8px; padding: 6px 12px;
-  }
 
   /* Smith MCP */
   .mcp { border-top: 1px solid var(--border); }
@@ -176,9 +272,55 @@
   .prompt-row {
     display: flex; align-items: center; justify-content: space-between; gap: 14px;
     background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 13px 18px;
+    padding: 13px 18px; transition: border-color .2s;
   }
+  .prompt-row:hover { border-color: var(--accent-dim); }
   .prompt-row code { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+
+  /* ——— Pricing ——— */
+  .pricing { background: var(--surface); border-block: 1px solid var(--border); }
+  .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 860px; margin: 0 auto; perspective: 1400px; }
+  @media (max-width: 720px) { .price-grid { grid-template-columns: 1fr; } }
+  .price-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 20px;
+    padding: 34px 30px; position: relative;
+    transition: transform .25s var(--ease), border-color .25s, box-shadow .25s;
+    transform-style: preserve-3d;
+  }
+  .price-card.pro { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+  .price-card:hover { box-shadow: 0 26px 70px rgba(0,0,0,.55); }
+  .price-card.pro:hover { box-shadow: 0 26px 70px rgba(56,224,123,.14); }
+  .badge {
+    position: absolute; top: -12px; right: 24px;
+    background: var(--accent); color: #04140b;
+    font-size: 11.5px; font-weight: 750; letter-spacing: .04em;
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .price-card .plan { font-size: 15px; font-weight: 650; color: var(--muted); }
+  .price-card .amount { font-size: 46px; font-weight: 760; letter-spacing: -0.04em; margin: 8px 0 4px; }
+  .price-card .amount span { font-size: 16px; font-weight: 550; color: var(--muted); letter-spacing: 0; }
+  .price-card .blurb { color: var(--muted); font-size: 14.5px; margin-bottom: 22px; }
+  .price-card ul { list-style: none; margin: 22px 0 0; display: flex; flex-direction: column; gap: 11px; }
+  .price-card li { font-size: 14px; color: var(--text); display: flex; gap: 10px; align-items: baseline; }
+  .price-card li::before { content: "✓"; color: var(--accent); font-weight: 800; flex-shrink: 0; }
+  .price-card .btn { width: 100%; justify-content: center; }
+
+  /* FAQ */
+  .faq { max-width: 720px; margin: 64px auto 0; }
+  .faq h3 { text-align: center; font-size: 22px; letter-spacing: -0.02em; margin-bottom: 22px; }
+  .faq details {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 0 20px; margin-bottom: 10px; transition: border-color .2s;
+  }
+  .faq details[open] { border-color: var(--accent-dim); }
+  .faq summary {
+    cursor: pointer; padding: 16px 0; font-weight: 600; font-size: 15px;
+    list-style: none; display: flex; justify-content: space-between; align-items: center;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--accent); font-size: 20px; font-weight: 400; transition: transform .25s var(--ease); }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq details p { color: var(--muted); font-size: 14px; padding-bottom: 18px; }
 
   /* CTA band */
   .cta-band { text-align: center; }
@@ -209,21 +351,21 @@
   <div class="wrap nav-inner">
     <a class="logo" href="#"><span class="logo-mark">S</span> Agent Smith</a>
     <div class="nav-links">
-      <a href="#agents">Agents</a>
       <a href="#features">Features</a>
       <a href="#mobilize">Web → Mobile</a>
-      <a href="#how">How it works</a>
       <a href="#mcp">Smith MCP</a>
-      <a href="#" >Docs</a>
+      <a href="#pricing">Pricing</a>
+      <a href="docs.html">Docs</a>
       <a class="btn btn-primary" href="#install">Get started</a>
     </div>
   </div>
 </nav>
 
 <header class="hero">
+  <canvas id="rain"></canvas>
   <div class="wrap">
     <div class="eyebrow">● MCP-native App Store operator</div>
-    <h1>Smith ships the app<br/>from <span class="accent">any coding agent</span>.</h1>
+    <h1>Smith ships the app<br/>from <span class="accent" id="decode">any coding agent</span>.</h1>
     <p class="sub">Connect Smith to the tools you already use, then <strong>Agent Smith</strong> handles screenshots, listings, and App Store submission for you.</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="#install">Get started</a>
@@ -243,38 +385,38 @@
       <p>Smith speaks MCP — it plugs into whatever you're already coding with.</p>
     </div>
     <div class="agent-grid">
-      <a class="agent-card" href="#install">
+      <a class="agent-card" href="#install" data-tilt>
         <div class="icon">✳</div>
         <h3>Claude</h3>
         <p>Claude Desktop, claude.ai &amp; Claude Code</p>
       </a>
-      <a class="agent-card" href="#install">
+      <a class="agent-card" href="#install" data-tilt>
         <div class="icon">▮</div>
         <h3>Cursor</h3>
         <p>AI-first code editor</p>
       </a>
-      <a class="agent-card" href="#install">
+      <a class="agent-card" href="#install" data-tilt>
         <div class="icon">◎</div>
         <h3>Codex</h3>
         <p>OpenAI's coding agent</p>
       </a>
-      <a class="agent-card" href="#install">
+      <a class="agent-card" href="#install" data-tilt>
         <div class="icon">⌁</div>
         <h3>GitHub Copilot</h3>
         <p>Pair programmer from GitHub</p>
       </a>
-      <a class="agent-card" href="#install">
+      <a class="agent-card" href="#install" data-tilt>
         <div class="icon">▢</div>
         <h3>VS Code</h3>
         <p>Visual Studio Code + Copilot Chat</p>
       </a>
-      <a class="agent-card" href="#install">
+      <a class="agent-card" href="#install" data-tilt>
         <div class="icon">⋯</div>
         <h3>Other</h3>
         <p>Any coding agent via npx add-mcp</p>
       </a>
     </div>
-    <p class="agent-note">Using a different agent? VS Code, Replit, Cline &amp; 20+ more in the <a href="#">docs</a>.</p>
+    <p class="agent-note">Using a different agent? VS Code, Replit, Cline &amp; 20+ more in the <a href="docs.html">docs</a>.</p>
   </div>
 </section>
 
@@ -314,6 +456,49 @@
         <div class="f-icon">🔐</div>
         <h3>Capabilities &amp; keys</h3>
         <p>Sign in with Apple, push notification keys, and provisioning profiles created and delivered where your app needs them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="choice" id="choice">
+  <div class="hands-stage" id="handsStage"></div>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>You built a web app. Now choose.</h2>
+      <p>Two pills. One decision. You already know which one you'd take.</p>
+    </div>
+    <div class="choice-grid">
+      <div class="pill-card blue" id="bluePill" data-tilt>
+        <div class="pill blue-pill"></div>
+        <span class="tag">Blue pill</span>
+        <h3>Stay in the browser</h3>
+        <p>Your app stays a URL people forget. No home screen, no push, no store revenue. The story ends, you wake up tomorrow and refresh your analytics.</p>
+        <span class="take">Take the blue pill</span>
+      </div>
+      <div class="pill-card red" id="redPill" data-tilt>
+        <div class="pill red-pill"></div>
+        <span class="tag">Red pill</span>
+        <h3>Get on the App Stores</h3>
+        <p>See how deep the app stores go. Native app, push notifications, in-app revenue, both storefronts — and Smith does the paperwork.</p>
+        <span class="take">Take the red pill</span>
+      </div>
+    </div>
+    <div class="choice-result" id="blueResult">
+      <div class="panel">
+        <h3>Enjoy the browser tab. 🫥</h3>
+        <p>No judgment. Your web app will still be there — right where users left it, in a tab they closed. We'll be here when you're ready.</p>
+        <button class="again" onclick="resetChoice()">…okay, show me the red pill</button>
+      </div>
+    </div>
+    <div class="choice-result red-side" id="redResult">
+      <div class="panel">
+        <h3>Good choice. Watch how many hands Smith has.</h3>
+        <p>Wrapping your app, generating screenshots, signing builds, answering App Review — all at once. That's the point of Smith: it's never just one of him.</p>
+        <a class="btn btn-primary" href="#mobilize">See the conversion</a>
+        &nbsp;
+        <a class="btn btn-ghost" href="#pricing">See pricing</a>
+        <div><button class="again" onclick="resetChoice()">choose again</button></div>
       </div>
     </div>
   </div>
@@ -421,6 +606,70 @@
   </div>
 </section>
 
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Simple, honest pricing.</h2>
+      <p>Start free, upgrade when you're ready to ship. No surprises.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card" data-tilt>
+        <div class="plan">Free</div>
+        <div class="amount">$0</div>
+        <p class="blurb">Try Smith with 500 free credits — just connect your App Store Connect account.</p>
+        <a class="btn btn-ghost" href="#install">Start for free</a>
+        <ul>
+          <li>500 free credits when you connect App Store Connect</li>
+          <li>Valid for your first 30 days</li>
+          <li>No credit card required</li>
+          <li>Full access to your App Manager</li>
+        </ul>
+      </div>
+      <div class="price-card pro" data-tilt>
+        <div class="badge">MOST POPULAR</div>
+        <div class="plan">Pro</div>
+        <div class="amount">$29.99<span>/month</span></div>
+        <p class="blurb">Everything you need to go from web app to both app stores — and grow once you're there.</p>
+        <a class="btn btn-primary" href="#install">Get started</a>
+        <ul>
+          <li>2,500 AI credits included every month</li>
+          <li>Unlimited App Store &amp; Google Play submissions</li>
+          <li>Web app → mobile app conversion (Lovable, Emergent, Bolt &amp; any repo)</li>
+          <li>Store-compliance refactors: IAP &amp; Play Billing, account deletion, privacy</li>
+          <li>Screenshots, app icon &amp; ASO listing</li>
+          <li>Certificates, signing, review &amp; rejections handled</li>
+          <li>Payments &amp; subscriptions set up</li>
+          <li>Priority support</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq">
+      <h3>Frequently asked</h3>
+      <details>
+        <summary>What are AI credits?</summary>
+        <p>Credits are what your App Manager spends when it works. Pro includes 2,500 credits a month — plenty for normal shipping — and new organizations get 500 starter credits free for their first 30 days when they connect their App Store Connect account.</p>
+      </details>
+      <details>
+        <summary>What if I run out of credits?</summary>
+        <p>Nothing gets cut off mid-task. Enable usage-based billing and we top up your balance automatically with 2,000 credits for $15 whenever you run low, up to a monthly spend limit you control. You're never billed after the fact.</p>
+      </details>
+      <details>
+        <summary>Can Smith really turn my Lovable or Emergent app into a mobile app?</summary>
+        <p>Yes. Connect the GitHub repo your builder pushes to, and Smith wraps it in a native shell, flags and fixes what the stores reject (web checkout, missing account deletion, privacy policy), and ships it to TestFlight and the Play Console.</p>
+      </details>
+      <details>
+        <summary>Do I need Apple and Google developer accounts?</summary>
+        <p>Yes — Apple's Developer Program ($99/yr) for the App Store and a Google Play Console account ($25 one-time) for Android. Smith walks you through setting up both and handles everything inside them for you.</p>
+      </details>
+      <details>
+        <summary>Can I cancel anytime?</summary>
+        <p>Yes. There are no contracts and no setup fees, so you can cancel whenever you want.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
 <section class="cta-band">
   <div class="wrap">
     <div class="panel">
@@ -435,8 +684,8 @@
   <div class="wrap foot">
     <a class="logo" href="#"><span class="logo-mark">S</span> Agent Smith</a>
     <div class="links">
-      <a href="#">Pricing</a>
-      <a href="#">Docs</a>
+      <a href="#pricing">Pricing</a>
+      <a href="docs.html">Docs</a>
       <a href="#">Blog</a>
       <a href="#">Support</a>
     </div>
@@ -445,15 +694,158 @@
 </footer>
 
 <script>
+/* ————— Behavioral machinery: sound, haptics, rain, decode, reveal, tilt, pills ————— */
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Sound: tiny WebAudio synth, created on first interaction (browser rule). */
+let AC = null;
+function ac() { return (AC ??= new (window.AudioContext || window.webkitAudioContext)()); }
+function tone(freq, dur, type = "sine", gain = 0.08, when = 0) {
+  const ctx = ac(), o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.setValueAtTime(gain, ctx.currentTime + when);
+  g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + when + dur);
+  o.connect(g).connect(ctx.destination);
+  o.start(ctx.currentTime + when); o.stop(ctx.currentTime + when + dur + 0.05);
+}
+const snd = {
+  tick()    { try { tone(1400, .07, "square", .04); } catch {} },
+  blue()    { try { tone(220, .35, "sine", .09); tone(165, .5, "sine", .07, .12); } catch {} },
+  red()     { try { [523, 659, 784, 1047].forEach((f, i) => tone(f, .22, "triangle", .07, i * .07)); } catch {} },
+  hover()   { try { tone(900, .04, "sine", .015); } catch {} },
+};
+function buzz(pattern) { if (navigator.vibrate) navigator.vibrate(pattern); }
+
+/* Digital rain */
+const canvas = document.getElementById("rain");
+if (canvas && !reduced) {
+  const ctx = canvas.getContext("2d");
+  const glyphs = "アイウエオカキクケコサシスセソ0123456789SMITH</>";
+  let cols = [], W, H, running = true;
+  function size() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    cols = Array(Math.floor(W / 16)).fill(0).map(() => Math.random() * -H);
+  }
+  size(); addEventListener("resize", size);
+  let last = 0;
+  function draw(t) {
+    if (running && t - last > 50) {
+      last = t;
+      ctx.fillStyle = "rgba(10,11,13,0.12)"; ctx.fillRect(0, 0, W, H);
+      ctx.font = "14px monospace";
+      cols.forEach((y, i) => {
+        ctx.fillStyle = Math.random() > .975 ? "#b8ffd6" : "#38e07b";
+        ctx.fillText(glyphs[(Math.random() * glyphs.length) | 0], i * 16, y);
+        cols[i] = y > H + Math.random() * 400 ? 0 : y + 16;
+      });
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+  new IntersectionObserver(([e]) => (running = e.isIntersecting)).observe(canvas);
+}
+
+/* Headline decode effect */
+const decodeEl = document.getElementById("decode");
+if (decodeEl && !reduced) {
+  const final = decodeEl.textContent, glyphs = "アイウエオカキクケコ01</>#$&";
+  let frame = 0;
+  decodeEl.classList.add("decoding");
+  const iv = setInterval(() => {
+    frame++;
+    decodeEl.textContent = final
+      .split("")
+      .map((ch, i) => (i < frame / 2.2 ? ch : ch === " " ? " " : glyphs[(Math.random() * glyphs.length) | 0]))
+      .join("");
+    if (frame / 2.2 >= final.length) { clearInterval(iv); decodeEl.textContent = final; decodeEl.classList.remove("decoding"); }
+  }, 40);
+}
+
+/* Scroll reveal with stagger */
+const revealables = document.querySelectorAll(
+  ".section-head, .agent-card, .feature, .step, .prompt-row, .price-card, .pill-card, .chip, .tick, .faq details, .cta-band .panel"
+);
+revealables.forEach((el) => {
+  el.classList.add("reveal");
+  const sibs = [...el.parentElement.children].filter((c) => c.classList.contains("reveal"));
+  el.style.setProperty("--d", (sibs.indexOf(el) * 0.07).toFixed(2) + "s");
+});
+const io = new IntersectionObserver(
+  (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }),
+  { threshold: 0.12 }
+);
+revealables.forEach((el) => io.observe(el));
+
+/* 3D tilt */
+if (!reduced) {
+  document.querySelectorAll("[data-tilt]").forEach((card) => {
+    card.addEventListener("mousemove", (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateY(-3px)`;
+    });
+    card.addEventListener("mouseleave", () => (card.style.transform = ""));
+    card.addEventListener("mouseenter", () => snd.hover());
+  });
+}
+
+/* Red pill / blue pill */
+const TASKS = [
+  ["✋", "resizing screenshots"], ["🤚", "signing the build"], ["🖐", "uploading to TestFlight"],
+  ["✋", "answering App Review"], ["🤚", "setting territory pricing"], ["🖐", "generating app icons"],
+  ["✋", "writing the ASO listing"], ["🤚", "configuring IAP"], ["🖐", "wrapping the web app"],
+  ["✋", "adding push notifications"], ["🤚", "building the .aab"], ["🖐", "syncing Capacitor"],
+];
+function handsBurst() {
+  const stage = document.getElementById("handsStage");
+  if (!stage || reduced) return;
+  TASKS.forEach(([h, label], i) => {
+    setTimeout(() => {
+      const chip = document.createElement("div");
+      chip.className = "hand-chip";
+      chip.innerHTML = `<span class="h">${h}</span>${label}`;
+      const a = Math.random() * Math.PI * 2, d = 180 + Math.random() * 320;
+      chip.style.setProperty("--fx", Math.cos(a) * d + "px");
+      chip.style.setProperty("--fy", Math.sin(a) * d * 0.6 + "px");
+      chip.style.setProperty("--fr", (Math.random() * 16 - 8).toFixed(1) + "deg");
+      stage.appendChild(chip);
+      setTimeout(() => chip.remove(), 2600);
+    }, i * 110);
+  });
+}
+function choose(color) {
+  document.getElementById("blueResult").classList.toggle("show", color === "blue");
+  document.getElementById("redResult").classList.toggle("show", color === "red");
+  const rain = document.getElementById("rain");
+  if (color === "red") {
+    snd.red(); buzz([30, 40, 30, 40, 80]);
+    handsBurst();
+    if (rain) { rain.classList.add("burst"); setTimeout(() => rain.classList.remove("burst"), 2800); }
+  } else {
+    snd.blue(); buzz(15);
+  }
+}
+function resetChoice() {
+  snd.tick();
+  document.getElementById("blueResult").classList.remove("show");
+  document.getElementById("redResult").classList.remove("show");
+}
+document.getElementById("bluePill")?.addEventListener("click", () => choose("blue"));
+document.getElementById("redPill")?.addEventListener("click", () => choose("red"));
+
+/* Copy buttons */
 function copyPrompt(btn) {
   const t = btn.previousElementSibling.textContent.replace(/^"|"$/g, "");
   navigator.clipboard.writeText(t).then(() => {
+    snd.tick(); buzz(10);
     btn.textContent = "Copied";
     setTimeout(() => (btn.textContent = "Copy"), 1500);
   });
 }
 function copySnippet(btn) {
   navigator.clipboard.writeText("npx add-mcp https://api.agentsmith.app/mcp").then(() => {
+    snd.tick(); buzz(10);
     btn.textContent = "Copied";
     setTimeout(() => (btn.textContent = "Copy"), 1500);
   });
