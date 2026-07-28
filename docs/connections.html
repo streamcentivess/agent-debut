@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Connect your stores | Agent Debut</title>
+<link rel="icon" type="image/svg+xml" href="brand/favicon.svg" />
+<script src="app/config.js"></script>
+<style>
+  :root {
+    --bg: #0a0b0d; --surface: #111318; --surface-2: #171a21; --border: #23262e;
+    --text: #f2f4f8; --muted: #9aa1ad; --accent: #38e07b; --accent-dim: #1e7a45;
+    --amber: #f59e0b; --blue: #3b82f6; --red: #ef4444;
+    --font: "SF Pro Display", -apple-system, "Segoe UI", Inter, system-ui, sans-serif;
+    --mono: "SF Mono", ui-monospace, Menlo, monospace;
+    --ease: cubic-bezier(.22,.9,.24,1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; line-height: 1.55; }
+  a { color: inherit; }
+
+  .bar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+  .bar-in { max-width: 1000px; margin: 0 auto; padding: 0 24px; height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .logo { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 15.5px; text-decoration: none; }
+  .nav { display: flex; gap: 4px; }
+  .nav a { padding: 7px 14px; border-radius: 8px; font-size: 14px; color: var(--muted); text-decoration: none; }
+  .nav a:hover { background: var(--surface); color: var(--text); }
+  .nav a.on { background: var(--surface); color: var(--text); font-weight: 620; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-dim)); color: #04140b; display: grid; place-items: center; font-weight: 750; font-size: 13px; border: none; cursor: pointer; font-family: inherit; }
+  @media (max-width: 700px) { .nav a { padding: 7px 10px; font-size: 13px; } }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 34px 24px 90px; }
+  .head h1 { font-size: 28px; letter-spacing: -0.025em; font-weight: 730; }
+  .head p { color: var(--muted); font-size: 15px; margin-top: 6px; max-width: 620px; }
+  .reassure { display: flex; gap: 10px; align-items: flex-start; background: color-mix(in srgb, var(--accent) 7%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); border-radius: 12px; padding: 13px 16px; margin: 20px 0 28px; font-size: 14px; color: #b8f5d2; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 16px; overflow: hidden; }
+  .card-top { display: flex; align-items: center; gap: 15px; padding: 20px 22px; }
+  .brandmark { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; font-size: 24px; }
+  .brandmark.apple { background: #1c1f26; border: 1px solid var(--border); }
+  .brandmark.play { background: #1c1f26; border: 1px solid var(--border); }
+  .card-title { flex: 1; min-width: 0; }
+  .card-title h2 { font-size: 17px; font-weight: 690; letter-spacing: -0.01em; }
+  .card-title p { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
+  .status { font-size: 12px; font-weight: 650; padding: 5px 12px; border-radius: 999px; white-space: nowrap; }
+  .s-off { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+  .s-on { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: 640; border: none; cursor: pointer; font-family: inherit; text-decoration: none; transition: transform .15s var(--ease), box-shadow .15s, background .15s; }
+  .btn-primary { background: var(--accent); color: #04140b; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 26px rgba(56,224,123,.3); }
+  .btn-ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: #1e232b; }
+  .btn-sm { padding: 7px 13px; font-size: 13px; border-radius: 8px; }
+
+  .body { display: none; border-top: 1px solid var(--border); padding: 22px; }
+  .body.open { display: block; }
+
+  .why { background: var(--bg); border: 1px solid var(--border); border-radius: 11px; padding: 14px 16px; margin-bottom: 20px; }
+  .why h4 { font-size: 13.5px; font-weight: 650; margin-bottom: 7px; }
+  .why ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .why li { font-size: 13.5px; color: var(--muted); display: flex; gap: 8px; }
+  .why li::before { content: "✓"; color: var(--accent); font-weight: 800; }
+
+  ol.steps { list-style: none; counter-reset: s; }
+  ol.steps > li { counter-increment: s; position: relative; padding-left: 42px; padding-bottom: 22px; }
+  ol.steps > li:not(:last-child)::after { content: ""; position: absolute; left: 13px; top: 30px; bottom: 0; width: 2px; background: var(--border); }
+  ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 13px; font-weight: 720; display: grid; place-items: center; }
+  ol.steps h5 { font-size: 15px; font-weight: 650; margin-bottom: 4px; }
+  ol.steps p { font-size: 13.5px; color: var(--muted); }
+  ol.steps .hint { font-size: 12.5px; color: var(--muted); background: var(--bg); border-left: 2px solid var(--accent-dim); padding: 7px 11px; border-radius: 0 7px 7px 0; margin-top: 8px; }
+  ol.steps a.ext { color: var(--accent); text-decoration: none; font-weight: 600; }
+  ol.steps a.ext:hover { text-decoration: underline; }
+
+  .field { margin-top: 10px; }
+  .field label { display: block; font-size: 12.5px; color: var(--muted); font-weight: 620; margin-bottom: 6px; }
+  .field input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-family: var(--mono); font-size: 13px; padding: 10px 13px; outline: none; }
+  .field input:focus { border-color: var(--accent-dim); }
+  .drop { border: 1px dashed var(--border); border-radius: 11px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .18s, background .18s; margin-top: 10px; }
+  .drop:hover, .drop.over { border-color: var(--accent-dim); background: color-mix(in srgb, var(--accent) 5%, transparent); }
+  .drop .ic { font-size: 22px; }
+  .drop p { font-size: 13.5px; color: var(--muted); margin-top: 5px; }
+  .drop b { color: var(--text); }
+  .drop.ok { border-style: solid; border-color: var(--accent-dim); background: color-mix(in srgb, var(--accent) 7%, transparent); }
+
+  .actions { display: flex; gap: 10px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); flex-wrap: wrap; align-items: center; }
+  .note { font-size: 12.5px; color: var(--muted); }
+
+  .help { text-align: center; margin-top: 34px; color: var(--muted); font-size: 14px; }
+  .help a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-in">
+    <a class="logo" href="dashboard.html"><img src="brand/mark.svg" alt="" width="26" height="26" /> Agent Debut</a>
+    <nav class="nav">
+      <a href="dashboard.html">Your apps</a>
+      <a href="connections.html" class="on">Connect stores</a>
+      <a href="docs.html">Help</a>
+    </nav>
+    <button class="avatar" id="avatarBtn">K</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="head">
+    <h1>Connect your stores</h1>
+    <p>Debut needs permission to work inside your Apple and Google accounts. You only do this once, and we walk you through every click.</p>
+  </div>
+
+  <div class="reassure">
+    <span>🔒</span>
+    <div>Your keys are stored encrypted and are never shown to the AI you chat with. Debut does the work on your behalf, and anything permanent (like submitting to Apple) always asks you first.</div>
+  </div>
+
+  <!-- Apple -->
+  <div class="card">
+    <div class="card-top">
+      <div class="brandmark apple"></div>
+      <div class="card-title">
+        <h2>Apple App Store</h2>
+        <p>Lets Debut build, upload to TestFlight, write your listing, and submit for review.</p>
+      </div>
+      <span class="status s-off" id="appleStatus">Not connected</span>
+      <button class="btn btn-primary btn-sm" id="appleToggle">Connect</button>
+    </div>
+    <div class="body" id="appleBody">
+      <div class="why">
+        <h4>What Debut will do with this</h4>
+        <ul>
+          <li>Send test versions of your app to your phone</li>
+          <li>Create your store listing, screenshots, and description</li>
+          <li>Set up subscriptions and in-app purchases</li>
+          <li>Submit for review and handle rejections</li>
+        </ul>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <h5>Open your Apple developer account</h5>
+          <p>Sign in at <a class="ext" href="https://appstoreconnect.apple.com/access/integrations/api" target="_blank" rel="noopener">App Store Connect &rarr; Integrations</a>. This is Apple's website, not ours.</p>
+          <div class="hint">Don't have an Apple Developer account yet? It costs $99/year from Apple and takes about a day to approve. <a class="ext" href="https://developer.apple.com/programs/enroll/" target="_blank" rel="noopener">Start here</a>.</div>
+        </li>
+        <li>
+          <h5>Create a key for Debut</h5>
+          <p>Click the blue <b>+</b> button. Name it "Agent Debut" and choose the access level <b>App Manager</b>. Then click Generate.</p>
+        </li>
+        <li>
+          <h5>Download the file Apple gives you</h5>
+          <p>Apple gives you a file ending in <b>.p8</b>. You can only download it once, so keep it somewhere safe.</p>
+        </li>
+        <li>
+          <h5>Give it to Debut</h5>
+          <p>Copy the two IDs shown next to your new key, then drop the file below.</p>
+          <div class="field">
+            <label for="keyId">Key ID (looks like ABC123DEFG)</label>
+            <input id="keyId" placeholder="ABC123DEFG" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="issuerId">Issuer ID (the long code at the top of the page)</label>
+            <input id="issuerId" placeholder="00000000-0000-0000-0000-000000000000" autocomplete="off" />
+          </div>
+          <div class="drop" id="appleDrop">
+            <div class="ic">📄</div>
+            <p><b>Drop your .p8 file here</b> or click to choose it</p>
+            <input type="file" id="appleFile" accept=".p8" hidden />
+          </div>
+        </li>
+      </ol>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="appleSave">Connect Apple</button>
+        <span class="note">Takes about 3 minutes.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google -->
+  <div class="card">
+    <div class="card-top">
+      <div class="brandmark play">▶</div>
+      <div class="card-title">
+        <h2>Google Play</h2>
+        <p>Lets Debut upload Android builds, fill in your Play listing, and publish.</p>
+      </div>
+      <span class="status s-off" id="playStatus">Not connected</span>
+      <button class="btn btn-ghost btn-sm" id="playToggle">Connect</button>
+    </div>
+    <div class="body" id="playBody">
+      <div class="why">
+        <h4>What Debut will do with this</h4>
+        <ul>
+          <li>Upload your Android app to testing tracks</li>
+          <li>Write your Play Store listing and add screenshots</li>
+          <li>Set up Play Billing for subscriptions</li>
+          <li>Roll out releases to real users</li>
+        </ul>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <h5>Open your Play Console</h5>
+          <p>Sign in at <a class="ext" href="https://play.google.com/console" target="_blank" rel="noopener">Google Play Console</a>, then go to <b>Setup &rarr; API access</b>.</p>
+          <div class="hint">No Play Console account yet? It's a one-time $25 fee from Google. <a class="ext" href="https://play.google.com/console/signup" target="_blank" rel="noopener">Sign up here</a>.</div>
+        </li>
+        <li>
+          <h5>Create a service account</h5>
+          <p>Click <b>Create new service account</b> and follow the link to Google Cloud. Name it "Agent Debut" and create a <b>JSON key</b>.</p>
+        </li>
+        <li>
+          <h5>Give it permission</h5>
+          <p>Back in Play Console, find the new account and grant it <b>Admin (all permissions)</b> for your app, then click Invite user.</p>
+        </li>
+        <li>
+          <h5>Give the file to Debut</h5>
+          <p>Drop the JSON file Google gave you below.</p>
+          <div class="drop" id="playDrop">
+            <div class="ic">📄</div>
+            <p><b>Drop your JSON file here</b> or click to choose it</p>
+            <input type="file" id="playFile" accept=".json" hidden />
+          </div>
+        </li>
+      </ol>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="playSave">Connect Google Play</button>
+        <span class="note">Takes about 5 minutes.</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="help">Stuck on any step? <a href="docs.html">Read the walkthrough</a> or email <a href="mailto:support@agentdebut.app">support@agentdebut.app</a> and we'll do it with you.</p>
+</div>
+
+<script type="module">
+import auth from "./app/auth.js";
+import { api } from "./app/api.js";
+
+const user = await auth.requireUser();
+if (user) document.getElementById("avatarBtn").textContent =
+  (user.name || user.email || "?")[0].toUpperCase();
+document.getElementById("avatarBtn").addEventListener("click", () => auth.signOut());
+
+/* expand / collapse */
+const toggle = (btn, body) => btn.addEventListener("click", () => {
+  const open = body.classList.toggle("open");
+  btn.textContent = open ? "Close" : "Connect";
+});
+toggle(document.getElementById("appleToggle"), document.getElementById("appleBody"));
+toggle(document.getElementById("playToggle"), document.getElementById("playBody"));
+
+/* file pickers */
+function wireDrop(dropId, inputId, label) {
+  const drop = document.getElementById(dropId), input = document.getElementById(inputId);
+  const show = (f) => {
+    drop.classList.add("ok");
+    drop.querySelector("p").innerHTML = `<b>${f.name}</b> ready to upload`;
+    drop.querySelector(".ic").textContent = "✅";
+  };
+  drop.addEventListener("click", () => input.click());
+  input.addEventListener("change", () => input.files[0] && show(input.files[0]));
+  drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
+  drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+  drop.addEventListener("drop", e => {
+    e.preventDefault(); drop.classList.remove("over");
+    const f = e.dataTransfer.files[0];
+    if (f) { input.files = e.dataTransfer.files; show(f); }
+  });
+  return () => input.files[0] || null;
+}
+const getAppleFile = wireDrop("appleDrop", "appleFile", ".p8");
+const getPlayFile = wireDrop("playDrop", "playFile", ".json");
+
+function connected(statusEl, toggleBtn, bodyEl, msg) {
+  statusEl.textContent = msg;
+  statusEl.className = "status s-on";
+  toggleBtn.textContent = "Manage";
+  bodyEl.classList.remove("open");
+}
+
+document.getElementById("appleSave").addEventListener("click", async (e) => {
+  const keyId = document.getElementById("keyId").value.trim();
+  const issuerId = document.getElementById("issuerId").value.trim();
+  const file = getAppleFile();
+  if (!keyId || !issuerId || !file) {
+    alert("We still need the Key ID, the Issuer ID, and the .p8 file Apple gave you.");
+    return;
+  }
+  e.target.textContent = "Connecting...";
+  try {
+    await api.connectApple({ keyId, issuerId, file });
+    connected(document.getElementById("appleStatus"), document.getElementById("appleToggle"),
+      document.getElementById("appleBody"), "Connected");
+  } catch (err) {
+    alert("That did not work: " + err.message);
+  } finally { e.target.textContent = "Connect Apple"; }
+});
+
+document.getElementById("playSave").addEventListener("click", async (e) => {
+  const file = getPlayFile();
+  if (!file) { alert("We still need the JSON file from Google."); return; }
+  e.target.textContent = "Connecting...";
+  try {
+    await api.connectGoogle({ file });
+    connected(document.getElementById("playStatus"), document.getElementById("playToggle"),
+      document.getElementById("playBody"), "Connected");
+  } catch (err) {
+    alert("That did not work: " + err.message);
+  } finally { e.target.textContent = "Connect Google Play"; }
+});
+
+/* reflect any existing connections */
+const state = await api.connections();
+if (state.apple) connected(document.getElementById("appleStatus"), document.getElementById("appleToggle"), document.getElementById("appleBody"), "Connected");
+if (state.google) connected(document.getElementById("playStatus"), document.getElementById("playToggle"), document.getElementById("playBody"), "Connected");
+</script>
+</body>
+</html>

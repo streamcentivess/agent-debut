@@ -24,6 +24,27 @@
   .bar-in { max-width: 1180px; margin: 0 auto; padding: 0 24px; height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .logo { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 15.5px; text-decoration: none; }
   .bar-right { display: flex; align-items: center; gap: 14px; }
+  .nav { display: flex; gap: 4px; }
+  .nav a { padding: 7px 14px; border-radius: 8px; font-size: 14px; color: var(--muted); text-decoration: none; }
+  .nav a:hover { background: var(--surface); color: var(--text); }
+  .nav a.on { background: var(--surface); color: var(--text); font-weight: 620; }
+  @media (max-width: 760px) { .nav { display: none; } }
+
+  /* setup checklist */
+  .setup { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin-bottom: 22px; }
+  .setup-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 4px; }
+  .setup-head h2 { font-size: 16.5px; font-weight: 690; }
+  .setup-head .prog { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+  .setup > p { color: var(--muted); font-size: 13.5px; margin-bottom: 15px; }
+  .track { height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; margin-bottom: 17px; }
+  .track i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); transition: width .5s var(--ease); }
+  .task { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+  .task:last-child { border-bottom: none; }
+  .task .box { width: 21px; height: 21px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; font-size: 11.5px; font-weight: 800; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); }
+  .task.done .box { background: var(--accent); color: #04140b; border-color: var(--accent); }
+  .task .lbl { flex: 1; font-size: 14px; }
+  .task.done .lbl { color: var(--muted); text-decoration: line-through; }
+  .task .reward { font-size: 11.5px; color: var(--accent); font-weight: 640; background: color-mix(in srgb, var(--accent) 12%, transparent); padding: 3px 9px; border-radius: 999px; }
   .credits { display: flex; align-items: center; gap: 9px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 7px 14px; font-size: 13px; }
   .credits b { color: var(--accent); font-variant-numeric: tabular-nums; }
   .meter { width: 54px; height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
@@ -61,7 +82,9 @@
   .copy { flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); border-radius: 7px; padding: 6px 11px; font-size: 12px; cursor: pointer; font-family: var(--font); font-weight: 620; }
   .copy:hover { color: var(--accent); border-color: var(--accent-dim); }
   .tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 13px; }
-  .tools span { font-size: 12px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 9px; font-family: var(--mono); }
+  .tools span { font-size: 12.5px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; }
+  .tools span::before { content: '"'; }
+  .tools span::after { content: '"'; }
 
   /* section */
   .sec-head { display: flex; align-items: center; justify-content: space-between; margin: 30px 0 14px; }
@@ -151,6 +174,11 @@
 <div class="bar">
   <div class="bar-in">
     <a class="logo" href="index.html"><img src="brand/mark.svg" alt="" width="26" height="26" /> Agent Debut</a>
+    <nav class="nav">
+      <a href="dashboard.html" class="on">Your apps</a>
+      <a href="connections.html">Connect stores</a>
+      <a href="docs.html">Help</a>
+    </nav>
     <div class="bar-right">
       <div class="credits" title="AI credits remaining this month">
         <span>Credits</span><b id="credLeft">2,140</b>
@@ -185,18 +213,54 @@
     </div>
   </div>
 
-  <!-- onboarding: connect your agent -->
+  <!-- setup checklist -->
+  <div class="setup" id="setupCard">
+    <div class="setup-head">
+      <h2>Finish setting up</h2>
+      <span class="prog" id="setupProg">2 of 4 done</span>
+    </div>
+    <p>Four things stand between you and your app being on real phones.</p>
+    <div class="track"><i id="setupBar" style="width:50%"></i></div>
+
+    <div class="task done">
+      <span class="box">✓</span>
+      <span class="lbl">Create your account</span>
+    </div>
+    <div class="task done">
+      <span class="box">✓</span>
+      <span class="lbl">Connect Debut to your AI tool</span>
+    </div>
+    <div class="task" id="taskStores">
+      <span class="box">3</span>
+      <span class="lbl">Connect the App Store and Google Play</span>
+      <a class="btn btn-ghost btn-sm" href="connections.html">Connect</a>
+    </div>
+    <div class="task" id="taskShip">
+      <span class="box">4</span>
+      <span class="lbl">Ship your first app</span>
+      <span class="reward">+500 credits</span>
+    </div>
+  </div>
+
+  <!-- how to talk to Debut -->
   <div class="connect" id="connectCard">
-    <h2><span class="step">1</span> Connect Debut to your AI tool</h2>
-    <p>Run this once in your project. Debut then shows up as a set of tools your agent can use in every conversation.</p>
+    <h2><span class="step">✳</span> How you use Debut</h2>
+    <p>Debut works through the AI tool you already use, like Claude, Cursor, or Codex. You ask in plain English, and Debut does the Apple and Google work behind the scenes.</p>
     <div class="cmd">
       <code><span class="c">npx add-mcp</span> <span id="mcpUrl">https://api.agentdebut.app/mcp</span></code>
       <button class="copy" id="copyCmd">Copy</button>
     </div>
     <div class="tools">
-      <span>list_apps</span><span>build_app</span><span>run_in_simulator</span><span>mobilize_web_app</span><span>store_readiness_check</span><span>submit_for_review</span>
-      <span style="border-color:var(--accent-dim); color:var(--accent)">+10 more</span>
+      <span>Put my app on my phone</span>
+      <span>Write my store listing</span>
+      <span>Make my screenshots</span>
+      <span>What's blocking my app?</span>
+      <span>Submit it to Apple</span>
+      <span>Fix the rejection</span>
     </div>
+    <p style="margin-top:13px; margin-bottom:0">
+      Not comfortable with a terminal? <a href="docs.html#connect" style="color:var(--accent)">We'll walk you through it click by click.</a>
+    </p>
   </div>
 
   <div class="sec-head">
@@ -223,6 +287,7 @@
 
 <script type="module">
 import auth from "./app/auth.js";
+import api from "./app/api.js";
 
 /* ---------- sample data used until a Supabase project is connected ---------- */
 const SAMPLE_APPS = [
@@ -282,7 +347,42 @@ if (user) {
   document.getElementById("greeting").textContent =
     `Welcome back, ${(user.name || user.email.split("@")[0])}`;
   if (auth.preview) document.getElementById("previewNote").style.display = "block";
-  render(SAMPLE_APPS, SAMPLE_FEED);
+
+  const [apps, feed, credits, conns] = await Promise.all([
+    api.apps().catch(() => null),
+    api.activity().catch(() => null),
+    api.credits().catch(() => null),
+    api.connections().catch(() => ({ apple: false, google: false })),
+  ]);
+  render(apps ?? SAMPLE_APPS, feed ?? SAMPLE_FEED);
+
+  if (credits) {
+    document.getElementById("credLeft").textContent = credits.remaining.toLocaleString();
+    document.getElementById("credBar").style.width =
+      Math.round((credits.remaining / credits.included) * 100) + "%";
+  }
+  updateSetup(conns, (apps ?? SAMPLE_APPS).length > 0);
+}
+
+/** Reflect real progress in the setup checklist. */
+function updateSetup(conns, hasApps) {
+  const storesDone = conns.apple || conns.google;
+  const steps = [true, true, storesDone, hasApps && storesDone];
+  const done = steps.filter(Boolean).length;
+  document.getElementById("setupProg").textContent = `${done} of 4 done`;
+  document.getElementById("setupBar").style.width = (done / 4) * 100 + "%";
+  if (storesDone) {
+    const t = document.getElementById("taskStores");
+    t.classList.add("done");
+    t.querySelector(".box").textContent = "✓";
+    t.querySelector("a")?.remove();
+  }
+  if (steps[3]) {
+    const t = document.getElementById("taskShip");
+    t.classList.add("done");
+    t.querySelector(".box").textContent = "✓";
+  }
+  if (done === 4) document.getElementById("setupCard").style.display = "none";
 }
 
 function pillClass(s) {
