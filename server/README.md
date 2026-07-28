@@ -40,6 +40,10 @@ npm run start:http
 | `submit_for_review` | Submit a version to Apple review |
 | `stage_build` | Build, sign, and upload to TestFlight via local fastlane |
 | `asc_request` | Raw ASC API v1 escape hatch (IAP, pricing, localizations, …) |
+| `import_repo` | Clone a GitHub repo (Lovable, Emergent, Bolt, Replit, v0, …) into the workspace |
+| `analyze_web_app` | Detect framework, build command, web output dir, existing native shell |
+| `store_readiness_check` | Scan for App Store / Play rejection risks: web checkout vs IAP, account deletion, privacy policy, tracking, minimum functionality |
+| `mobilize_web_app` | Refactor a web app into a native shell: Capacitor install + config, build, add iOS/Android, sync |
 
 ## Notes
 

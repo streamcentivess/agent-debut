@@ -3,6 +3,12 @@ import { z } from "zod";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { AscClient } from "./asc/client.js";
+import {
+  cloneRepo,
+  detectWebApp,
+  mobilize,
+  storeReadinessScan,
+} from "./mobilize.js";
 
 const exec = promisify(execFile);
 
@@ -180,6 +186,90 @@ export function createServer(): McpServer {
               ? await client.post(path, body)
               : await client.patch(path, body);
         return text(result ?? { ok: true });
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "import_repo",
+    {
+      title: "Import a GitHub repo",
+      description:
+        "Clone (or update) a GitHub repository into Agent Smith's workspace — the entry point for converting a web app from Lovable, Emergent, Bolt, Replit, v0, or any repo into a mobile app. Returns the local path plus detected framework.",
+      inputSchema: {
+        repo_url: z.string().describe("Git clone URL, e.g. https://github.com/user/app.git"),
+        branch: z.string().optional().describe("Branch to clone (default: repo default)"),
+      },
+    },
+    async ({ repo_url, branch }) => {
+      try {
+        const dir = await cloneRepo(repo_url, branch);
+        return text({ project_dir: dir, detection: detectWebApp(dir) });
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "analyze_web_app",
+    {
+      title: "Analyze web app",
+      description:
+        "Detect the web framework, build command, and output dir of a project, and report whether it already has a native (Capacitor) shell.",
+      inputSchema: {
+        project_dir: z.string().describe("Absolute path to the project (from import_repo)"),
+      },
+    },
+    async ({ project_dir }) => {
+      try {
+        return text(detectWebApp(project_dir));
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "store_readiness_check",
+    {
+      title: "Store readiness check",
+      description:
+        "Scan a web app for the refactors iOS App Review and Google Play require before they'll accept it: web checkout that must become IAP/Play Billing, missing account deletion, missing privacy policy, tracking disclosures, minimum-functionality risk. Returns findings with severity and the files involved so the refactor can be applied.",
+      inputSchema: {
+        project_dir: z.string().describe("Absolute path to the project"),
+      },
+    },
+    async ({ project_dir }) => {
+      try {
+        return text(await storeReadinessScan(project_dir));
+      } catch (e) {
+        return errorText(e);
+      }
+    }
+  );
+
+  server.registerTool(
+    "mobilize_web_app",
+    {
+      title: "Convert web app to mobile app",
+      description:
+        "Refactor a web app into a store-ready native shell: installs Capacitor, writes the native config, builds the web assets, adds the iOS and/or Android platforms, and syncs them. After this, stage_build can ship it to TestFlight.",
+      inputSchema: {
+        project_dir: z.string().describe("Absolute path to the project (from import_repo)"),
+        app_name: z.string().describe('Display name, e.g. "Streamcentives"'),
+        bundle_id: z.string().describe('Reverse-DNS id, e.g. "io.streamcentives.app"'),
+        platforms: z
+          .array(z.enum(["ios", "android"]))
+          .default(["ios", "android"])
+          .describe("Which native platforms to add"),
+      },
+    },
+    async ({ project_dir, app_name, bundle_id, platforms }) => {
+      try {
+        return text(await mobilize(project_dir, app_name, bundle_id, platforms));
       } catch (e) {
         return errorText(e);
       }
