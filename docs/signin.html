@@ -6,6 +6,7 @@
 <title>Sign in to Agent Debut</title>
 <meta name="description" content="Take the red pill: sign in to Agent Debut and put your app on the App Store." />
 <link rel="icon" type="image/svg+xml" href="brand/favicon.svg" />
+<script src="app/config.js"></script>
 <style>
   :root {
     --bg: #0a0b0d; --surface: #111318; --surface-2: #171a21; --border: #23262e;
@@ -106,6 +107,14 @@
   }
   .gate .go:hover { box-shadow: 0 8px 30px rgba(56,224,123,.35); }
   .gate .fine { color: var(--muted); font-size: 12.5px; margin-top: 12px; text-align: center; }
+  .gate .oauth {
+    width: 100%; justify-content: center; background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px;
+    font-size: 14.5px;
+  }
+  .gate .oauth:hover { background: #1e232b; border-color: var(--accent-dim); transform: translateY(-1px); }
+  .gate .or { display: flex; align-items: center; gap: 12px; margin: 16px 0 14px; color: var(--muted); font-size: 12px; }
+  .gate .or::before, .gate .or::after { content: ""; flex: 1; height: 1px; background: var(--border); }
   .gate .done { display: none; text-align: center; padding: 10px 0; }
   .gate .done h3 { color: var(--accent); font-size: 18px; letter-spacing: -0.01em; }
   .gate .done p { color: var(--muted); font-size: 14px; margin-top: 6px; }
@@ -191,15 +200,26 @@
 
   <div class="gate" id="gate">
     <div class="panel">
-      <form id="gateForm">
-        <label for="email">Your email</label>
-        <input id="email" type="email" required placeholder="you@company.com" autocomplete="email" />
-        <button class="btn go" type="submit">Enter the real world of app revenue →</button>
-        <p class="fine">Early access. No credit card. 500 free credits when you connect App Store Connect.</p>
-      </form>
+      <div id="gateChoices">
+        <button class="btn oauth" id="ghBtn">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          Continue with GitHub
+        </button>
+        <button class="btn oauth" id="ggBtn">
+          <svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45 24c0-1.6-.1-2.7-.4-3.9H24v7.1h12c-.2 1.8-1.5 4.6-4.4 6.4l6.7 5.2C42.2 35.1 45 30 45 24Z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-6.9-5.3c-1.8 1.3-4.3 2.2-7.6 2.2-5.8 0-10.7-3.8-12.5-9.900l-7.1 5.5C8.1 40.8 15.4 46 24 46Z"/><path fill="#FBBC05" d="M11.5 27.7c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4l-7.1-5.5C2.9 16.3 2 20 2 23.3s.9 7 2.4 9.9l7.1-5.5Z"/><path fill="#EA4335" d="M24 10.6c4.1 0 6.9 1.8 8.5 3.3l6.2-6C34.9 4.4 29.9 2 24 2 15.4 2 8.1 7.2 4.4 14.4l7.1 5.5C13.3 14.4 18.2 10.6 24 10.6Z"/></svg>
+          Continue with Google
+        </button>
+        <div class="or"><span>or use email</span></div>
+        <form id="gateForm">
+          <label for="email">Your email</label>
+          <input id="email" type="email" required placeholder="you@company.com" autocomplete="email" />
+          <button class="btn go" type="submit">Send me a sign-in link →</button>
+        </form>
+        <p class="fine">No password to remember. 500 free credits when you connect App Store Connect.</p>
+      </div>
       <div class="done" id="gateDone">
-        <h3>You're in the queue. ✓</h3>
-        <p>We'll email your invite. Your app doesn't know it yet, but it's going to the store.</p>
+        <h3 id="doneTitle">Check your email. ✓</h3>
+        <p id="doneBody">We sent a sign-in link. Open it on this device and Debut takes it from there.</p>
       </div>
     </div>
   </div>
@@ -280,12 +300,56 @@ document.getElementById("takeRed").addEventListener("click", () => {
 });
 document.getElementById("takeBlue").addEventListener("click", () => { tone(220, .3, "sine", .08); buzz(15); });
 
-document.getElementById("gateForm").addEventListener("submit", (e) => {
+</script>
+
+<script type="module">
+import auth from "./app/auth.js";
+
+const chime = () => {
+  try {
+    const c = new (window.AudioContext || window.webkitAudioContext)();
+    [660, 990].forEach((f, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.frequency.value = f; o.type = "sine";
+      g.gain.setValueAtTime(.06, c.currentTime + i * .12);
+      g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + i * .12 + .25);
+      o.connect(g).connect(c.destination);
+      o.start(c.currentTime + i * .12); o.stop(c.currentTime + i * .12 + .3);
+    });
+  } catch {}
+};
+
+// already signed in? go straight through
+auth.user().then(u => { if (u) location.href = "dashboard.html"; });
+
+const fail = (err) => {
+  const done = document.getElementById("gateDone");
+  document.getElementById("doneTitle").textContent = "That did not work.";
+  document.getElementById("doneBody").textContent =
+    (err?.message || "Sign-in failed.") + " Try another method, or email support@agentdebut.app.";
+  document.getElementById("gateChoices").style.display = "none";
+  done.style.display = "block";
+};
+
+document.getElementById("ghBtn").addEventListener("click", async () => {
+  chime();
+  try { await auth.signInWithProvider("github"); } catch (e) { fail(e); }
+});
+document.getElementById("ggBtn").addEventListener("click", async () => {
+  chime();
+  try { await auth.signInWithProvider("google"); } catch (e) { fail(e); }
+});
+
+document.getElementById("gateForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  tone(660, .15, "sine", .06); tone(990, .25, "sine", .06, .12);
-  buzz(20);
-  document.getElementById("gateForm").style.display = "none";
-  document.getElementById("gateDone").style.display = "block";
+  chime();
+  if (navigator.vibrate) navigator.vibrate(20);
+  try {
+    const r = await auth.signInWithEmail(document.getElementById("email").value);
+    if (r?.preview) { location.href = "dashboard.html"; return; }
+    document.getElementById("gateChoices").style.display = "none";
+    document.getElementById("gateDone").style.display = "block";
+  } catch (err) { fail(err); }
 });
 </script>
 </body>

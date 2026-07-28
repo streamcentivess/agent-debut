@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard | Agent Debut</title>
+<link rel="icon" type="image/svg+xml" href="brand/favicon.svg" />
+<script src="app/config.js"></script>
+<style>
+  :root {
+    --bg: #0a0b0d; --surface: #111318; --surface-2: #171a21; --border: #23262e;
+    --text: #f2f4f8; --muted: #9aa1ad; --accent: #38e07b; --accent-dim: #1e7a45;
+    --amber: #f59e0b; --blue: #3b82f6; --red: #ef4444;
+    --font: "SF Pro Display", -apple-system, "Segoe UI", Inter, system-ui, sans-serif;
+    --mono: "SF Mono", ui-monospace, Menlo, monospace;
+    --ease: cubic-bezier(.22,.9,.24,1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; line-height: 1.55; }
+  a { color: inherit; }
+
+  /* top bar */
+  .bar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+  .bar-in { max-width: 1180px; margin: 0 auto; padding: 0 24px; height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .logo { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 15.5px; text-decoration: none; }
+  .bar-right { display: flex; align-items: center; gap: 14px; }
+  .credits { display: flex; align-items: center; gap: 9px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 7px 14px; font-size: 13px; }
+  .credits b { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .meter { width: 54px; height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .meter i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-dim)); color: #04140b; display: grid; place-items: center; font-weight: 750; font-size: 13px; cursor: pointer; border: none; font-family: inherit; }
+  .menu { position: relative; }
+  .menu-pop { position: absolute; right: 0; top: 42px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 6px; min-width: 190px; display: none; box-shadow: 0 18px 50px rgba(0,0,0,.55); }
+  .menu-pop.open { display: block; }
+  .menu-pop .who { padding: 9px 11px; font-size: 12.5px; color: var(--muted); border-bottom: 1px solid var(--border); margin-bottom: 5px; word-break: break-all; }
+  .menu-pop button, .menu-pop a { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); font-family: inherit; font-size: 14px; padding: 9px 11px; border-radius: 8px; cursor: pointer; text-decoration: none; }
+  .menu-pop button:hover, .menu-pop a:hover { background: var(--surface-2); }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 30px 24px 80px; }
+  .preview-note { background: color-mix(in srgb, var(--amber) 10%, transparent); border: 1px solid color-mix(in srgb, var(--amber) 35%, transparent); color: #fde68a; border-radius: 12px; padding: 11px 16px; font-size: 13.5px; margin-bottom: 22px; }
+
+  .head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 24px; }
+  .head h1 { font-size: 27px; letter-spacing: -0.025em; font-weight: 730; }
+  .head p { color: var(--muted); font-size: 14.5px; margin-top: 3px; }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: 640; border: none; cursor: pointer; font-family: inherit; text-decoration: none; transition: transform .15s var(--ease), box-shadow .15s, background .15s; }
+  .btn-primary { background: var(--accent); color: #04140b; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 26px rgba(56,224,123,.32); }
+  .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--surface-2); }
+  .btn-sm { padding: 7px 13px; font-size: 13px; border-radius: 8px; }
+
+  /* connect card */
+  .connect { background: linear-gradient(180deg, var(--surface), var(--bg)); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; margin-bottom: 28px; }
+  .connect h2 { font-size: 16.5px; font-weight: 680; display: flex; align-items: center; gap: 9px; }
+  .connect h2 .step { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #04140b; font-size: 12px; font-weight: 800; display: grid; place-items: center; }
+  .connect p { color: var(--muted); font-size: 14px; margin: 7px 0 15px; }
+  .cmd { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 15px; font-family: var(--mono); font-size: 13px; overflow-x: auto; }
+  .cmd code { white-space: nowrap; }
+  .cmd .c { color: var(--accent); }
+  .copy { flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); border-radius: 7px; padding: 6px 11px; font-size: 12px; cursor: pointer; font-family: var(--font); font-weight: 620; }
+  .copy:hover { color: var(--accent); border-color: var(--accent-dim); }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 13px; }
+  .tools span { font-size: 12px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 9px; font-family: var(--mono); }
+
+  /* section */
+  .sec-head { display: flex; align-items: center; justify-content: space-between; margin: 30px 0 14px; }
+  .sec-head h2 { font-size: 17px; font-weight: 690; letter-spacing: -0.01em; }
+  .sec-head .count { color: var(--muted); font-size: 13px; }
+
+  /* app grid */
+  .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .app { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 19px; cursor: pointer; transition: border-color .18s, transform .18s var(--ease), box-shadow .18s; text-align: left; font-family: inherit; color: inherit; width: 100%; }
+  .app:hover { border-color: var(--accent-dim); transform: translateY(-2px); box-shadow: 0 14px 40px rgba(0,0,0,.45); }
+  .app-top { display: flex; align-items: center; gap: 12px; }
+  .app-icon { width: 42px; height: 42px; border-radius: 11px; background: var(--surface-2); border: 1px solid var(--border); display: grid; place-items: center; font-size: 19px; flex-shrink: 0; }
+  .app-name { font-size: 15.5px; font-weight: 660; letter-spacing: -0.01em; }
+  .app-bundle { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  .pill { font-size: 11.5px; font-weight: 650; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .p-live { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+  .p-review { background: color-mix(in srgb, var(--amber) 15%, transparent); color: #fbbf24; }
+  .p-ready { background: color-mix(in srgb, var(--blue) 15%, transparent); color: #93c5fd; }
+  .p-draft { background: var(--surface-2); color: var(--muted); }
+  .p-build { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+  .p-build::before { content: "●"; margin-right: 5px; animation: blink 1.2s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: .25; } }
+  .app-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; padding-top: 13px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--muted); }
+  .plats { display: flex; gap: 6px; }
+  .plats i { font-style: normal; font-size: 13px; opacity: .8; }
+
+  /* empty state */
+  .empty { border: 1px dashed var(--border); border-radius: 16px; padding: 46px 26px; text-align: center; }
+  .empty .big { font-size: 34px; margin-bottom: 12px; }
+  .empty h3 { font-size: 17.5px; font-weight: 680; }
+  .empty p { color: var(--muted); font-size: 14px; margin: 8px auto 20px; max-width: 400px; }
+  .empty .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  /* activity */
+  .feed { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .ev { display: flex; gap: 13px; padding: 13px 18px; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .ev:last-child { border-bottom: none; }
+  .ev .dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; flex-shrink: 0; background: var(--muted); }
+  .ev.ok .dot { background: var(--accent); }
+  .ev.warn .dot { background: var(--amber); }
+  .ev.err .dot { background: var(--red); }
+  .ev .txt { flex: 1; font-size: 14px; }
+  .ev .txt b { font-weight: 640; }
+  .ev .when { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+
+  /* detail drawer */
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 60; }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(520px, 100%); background: var(--bg); border-left: 1px solid var(--border); z-index: 70; transform: translateX(100%); transition: transform .32s var(--ease); overflow-y: auto; }
+  .drawer.open { transform: none; }
+  .d-head { padding: 22px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; position: sticky; top: 0; background: var(--bg); }
+  .d-head h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+  .x { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; padding: 0 4px; }
+  .x:hover { color: var(--text); }
+  .d-body { padding: 22px 24px 60px; }
+  .d-body h4 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 650; margin: 24px 0 11px; }
+  .d-body h4:first-child { margin-top: 0; }
+
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .st { display: flex; gap: 13px; align-items: flex-start; padding-bottom: 16px; position: relative; }
+  .st:not(:last-child)::before { content: ""; position: absolute; left: 10px; top: 24px; bottom: 0; width: 2px; background: var(--border); }
+  .st .mk { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; font-size: 12px; font-weight: 800; z-index: 1; }
+  .st.done .mk { background: var(--accent); color: #04140b; }
+  .st.now .mk { background: color-mix(in srgb, var(--amber) 22%, transparent); color: #fbbf24; border: 2px solid var(--amber); }
+  .st.todo .mk { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+  .st .lbl { font-size: 14.5px; font-weight: 620; }
+  .st .sub { font-size: 13px; color: var(--muted); }
+
+  .chk { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; align-items: flex-start; }
+  .chk:last-child { border: none; }
+  .chk .ic { flex-shrink: 0; font-size: 14px; }
+  .chk .d { color: var(--muted); font-size: 12.5px; }
+
+  .say { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 13px 15px; margin-top: 9px; }
+  .say .k { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); font-weight: 680; }
+  .say .q { font-size: 13.5px; margin-top: 5px; font-style: italic; color: var(--text); }
+  .say button { margin-top: 9px; }
+
+  @media (max-width: 640px) {
+    .credits { display: none; }
+    .head h1 { font-size: 23px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-in">
+    <a class="logo" href="index.html"><img src="brand/mark.svg" alt="" width="26" height="26" /> Agent Debut</a>
+    <div class="bar-right">
+      <div class="credits" title="AI credits remaining this month">
+        <span>Credits</span><b id="credLeft">2,140</b>
+        <span class="meter"><i id="credBar" style="width:86%"></i></span>
+      </div>
+      <div class="menu">
+        <button class="avatar" id="avatarBtn">K</button>
+        <div class="menu-pop" id="menuPop">
+          <div class="who" id="whoEmail">loading...</div>
+          <a href="docs.html">Docs</a>
+          <a href="index.html#pricing">Billing and plans</a>
+          <button id="signOutBtn">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="preview-note" id="previewNote" style="display:none">
+    <b>Preview mode.</b> This is the real dashboard running on sample data. Connect a Supabase project in <code>app/config.js</code> to switch on live accounts and real apps.
+  </div>
+
+  <div class="head">
+    <div>
+      <h1 id="greeting">Welcome back</h1>
+      <p id="subline">Here is what Debut has been doing while you were away.</p>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap">
+      <button class="btn btn-ghost" id="importBtn">Import from GitHub</button>
+      <button class="btn btn-primary" id="newAppBtn">Ship a new app</button>
+    </div>
+  </div>
+
+  <!-- onboarding: connect your agent -->
+  <div class="connect" id="connectCard">
+    <h2><span class="step">1</span> Connect Debut to your AI tool</h2>
+    <p>Run this once in your project. Debut then shows up as a set of tools your agent can use in every conversation.</p>
+    <div class="cmd">
+      <code><span class="c">npx add-mcp</span> <span id="mcpUrl">https://api.agentdebut.app/mcp</span></code>
+      <button class="copy" id="copyCmd">Copy</button>
+    </div>
+    <div class="tools">
+      <span>list_apps</span><span>build_app</span><span>run_in_simulator</span><span>mobilize_web_app</span><span>store_readiness_check</span><span>submit_for_review</span>
+      <span style="border-color:var(--accent-dim); color:var(--accent)">+10 more</span>
+    </div>
+  </div>
+
+  <div class="sec-head">
+    <h2>Your apps</h2>
+    <span class="count" id="appCount"></span>
+  </div>
+  <div class="apps" id="appGrid"></div>
+  <div class="empty" id="emptyState" style="display:none">
+    <div class="big">📱</div>
+    <h3>No apps yet</h3>
+    <p>Point Debut at the web app you already built, or connect an App Store Connect account that already has one.</p>
+    <div class="row">
+      <button class="btn btn-primary" id="emptyImport">Import from GitHub</button>
+      <button class="btn btn-ghost" id="emptyConnect">Connect App Store Connect</button>
+    </div>
+  </div>
+
+  <div class="sec-head"><h2>Recent activity</h2></div>
+  <div class="feed" id="feed"></div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="App detail"></aside>
+
+<script type="module">
+import auth from "./app/auth.js";
+
+/* ---------- sample data used until a Supabase project is connected ---------- */
+const SAMPLE_APPS = [
+  {
+    id: "streamcentives", name: "Streamcentives", bundle: "io.streamcentives.app",
+    icon: "🎵", status: "review", statusLabel: "In review", version: "1.0",
+    platforms: ["", "▲"], updated: "2 hours ago", build: "Build 3 processed",
+    stage: 3,
+    checks: [
+      { ok: false, t: "Web checkout found in 5 files", d: "Digital purchases must use Apple IAP or Play Billing." },
+      { ok: true, t: "Account deletion flow present", d: "Required by App Store rule 5.1.1(v)." },
+      { ok: true, t: "Privacy policy linked", d: "Reachable from the app and the listing." },
+      { ok: false, t: "Tracking SDKs detected", d: "Declare these in privacy labels and the Play data form." },
+    ],
+  },
+  {
+    id: "wavv", name: "Wavv", bundle: "io.streamcentives.wavv",
+    icon: "🌊", status: "building", statusLabel: "Building", version: "0.9",
+    platforms: [""], updated: "just now", build: "Compiling for simulator",
+    stage: 1,
+    checks: [
+      { ok: true, t: "Native shell added", d: "iOS project created and synced." },
+      { ok: false, t: "No native capability yet", d: "Add push or haptics to clear rule 4.2." },
+    ],
+  },
+  {
+    id: "culturewave", name: "CultureWave", bundle: "io.streamcentives.culture",
+    icon: "🎧", status: "live", statusLabel: "Live", version: "2.1",
+    platforms: ["", "▲"], updated: "3 days ago", build: "Available on both stores",
+    stage: 4,
+    checks: [
+      { ok: true, t: "All store requirements met", d: "Nothing blocking the next release." },
+    ],
+  },
+];
+
+const SAMPLE_FEED = [
+  { k: "ok", t: "<b>CultureWave 2.1</b> went live on the App Store and Google Play.", w: "3d ago" },
+  { k: "warn", t: "<b>Streamcentives</b> readiness scan found 1 blocker: web checkout must become in-app purchases.", w: "5h ago" },
+  { k: "ok", t: "<b>Streamcentives</b> build 3 finished processing and was attached to version 1.0.", w: "2h ago" },
+  { k: "", t: "<b>Wavv</b> imported from GitHub and wrapped into an iOS project.", w: "1h ago" },
+  { k: "ok", t: "<b>Wavv</b> launched in the iPhone 17 simulator for a first look.", w: "just now" },
+];
+
+const STAGES = [
+  { lbl: "Native app built", sub: "Compiled and signed with Apple tooling" },
+  { lbl: "On TestFlight", sub: "Installed on real devices for testing" },
+  { lbl: "Listing complete", sub: "Name, screenshots, description, and pricing" },
+  { lbl: "Submitted to Apple", sub: "In review or already approved" },
+];
+
+/* ---------- boot ---------- */
+const user = await auth.requireUser();
+if (user) {
+  document.getElementById("whoEmail").textContent = user.email;
+  document.getElementById("avatarBtn").textContent = (user.name || user.email || "?")[0].toUpperCase();
+  document.getElementById("greeting").textContent =
+    `Welcome back, ${(user.name || user.email.split("@")[0])}`;
+  if (auth.preview) document.getElementById("previewNote").style.display = "block";
+  render(SAMPLE_APPS, SAMPLE_FEED);
+}
+
+function pillClass(s) {
+  return { live: "p-live", review: "p-review", ready: "p-ready", building: "p-build" }[s] || "p-draft";
+}
+
+function render(apps, feed) {
+  const grid = document.getElementById("appGrid");
+  document.getElementById("appCount").textContent = `${apps.length} connected`;
+  if (!apps.length) {
+    document.getElementById("emptyState").style.display = "block";
+    return;
+  }
+  grid.innerHTML = apps.map((a, i) => `
+    <button class="app" data-i="${i}">
+      <div class="app-top">
+        <div class="app-icon">${a.icon}</div>
+        <div style="flex:1; min-width:0">
+          <div class="app-name">${a.name}</div>
+          <div class="app-bundle">${a.bundle}</div>
+        </div>
+        <span class="pill ${pillClass(a.status)}">${a.statusLabel}</span>
+      </div>
+      <div class="app-meta">
+        <span>v${a.version} · ${a.build}</span>
+        <span class="plats">${a.platforms.map(p => `<i>${p}</i>`).join("")}</span>
+      </div>
+    </button>`).join("");
+  grid.querySelectorAll(".app").forEach(el =>
+    el.addEventListener("click", () => openDrawer(apps[+el.dataset.i])));
+
+  document.getElementById("feed").innerHTML = feed.map(e => `
+    <div class="ev ${e.k}">
+      <span class="dot"></span>
+      <span class="txt">${e.t}</span>
+      <span class="when">${e.w}</span>
+    </div>`).join("");
+}
+
+/* ---------- detail drawer ---------- */
+const drawer = document.getElementById("drawer");
+const scrim = document.getElementById("scrim");
+
+function openDrawer(a) {
+  drawer.innerHTML = `
+    <div class="d-head">
+      <div style="display:flex; gap:13px; align-items:center">
+        <div class="app-icon">${a.icon}</div>
+        <div>
+          <h3>${a.name}</h3>
+          <div class="app-bundle">${a.bundle}</div>
+        </div>
+      </div>
+      <button class="x" id="closeDrawer">×</button>
+    </div>
+    <div class="d-body">
+      <h4>Progress to the store</h4>
+      <div class="steps">
+        ${STAGES.map((s, i) => {
+          const cls = i < a.stage ? "done" : i === a.stage ? "now" : "todo";
+          const mk = i < a.stage ? "✓" : i + 1;
+          return `<div class="st ${cls}"><span class="mk">${mk}</span>
+            <div><div class="lbl">${s.lbl}</div><div class="sub">${s.sub}</div></div></div>`;
+        }).join("")}
+      </div>
+
+      <h4>Store readiness</h4>
+      ${a.checks.map(c => `
+        <div class="chk">
+          <span class="ic">${c.ok ? "✅" : "⚠️"}</span>
+          <div><div>${c.t}</div><div class="d">${c.d}</div></div>
+        </div>`).join("")}
+
+      <h4>Tell your agent</h4>
+      <p style="color:var(--muted); font-size:13.5px">Debut works through the AI tool you already use. Paste one of these and it takes over.</p>
+      ${[
+        `Use Debut to ship ${a.name} to TestFlight and tell me when it is processed.`,
+        `Ask Debut what is blocking ${a.name} from the App Store, then fix it.`,
+        `Have Debut draft the App Store listing and screenshots for ${a.name}.`,
+      ].map(q => `
+        <div class="say">
+          <div class="k">Prompt</div>
+          <div class="q">"${q}"</div>
+          <button class="btn btn-ghost btn-sm say-copy" data-q="${q.replace(/"/g, "&quot;")}">Copy prompt</button>
+        </div>`).join("")}
+    </div>`;
+  drawer.classList.add("open");
+  scrim.classList.add("open");
+  drawer.querySelector("#closeDrawer").addEventListener("click", closeDrawer);
+  drawer.querySelectorAll(".say-copy").forEach(b =>
+    b.addEventListener("click", () => {
+      navigator.clipboard.writeText(b.dataset.q);
+      b.textContent = "Copied";
+      setTimeout(() => (b.textContent = "Copy prompt"), 1500);
+    }));
+}
+function closeDrawer() { drawer.classList.remove("open"); scrim.classList.remove("open"); }
+scrim.addEventListener("click", closeDrawer);
+addEventListener("keydown", e => e.key === "Escape" && closeDrawer());
+
+/* ---------- chrome ---------- */
+document.getElementById("avatarBtn").addEventListener("click", e => {
+  e.stopPropagation();
+  document.getElementById("menuPop").classList.toggle("open");
+});
+document.addEventListener("click", () => document.getElementById("menuPop").classList.remove("open"));
+document.getElementById("signOutBtn").addEventListener("click", () => auth.signOut());
+
+document.getElementById("copyCmd").addEventListener("click", e => {
+  navigator.clipboard.writeText(`npx add-mcp ${document.getElementById("mcpUrl").textContent}`);
+  e.target.textContent = "Copied";
+  setTimeout(() => (e.target.textContent = "Copy"), 1500);
+});
+
+const importPrompt = () => alert(
+  "Paste this to your AI tool:\n\n" +
+  '"Use Debut to import github.com/your/repo and get it ready for the App Store and Google Play."'
+);
+document.getElementById("importBtn").addEventListener("click", importPrompt);
+document.getElementById("newAppBtn").addEventListener("click", importPrompt);
+document.getElementById("emptyImport")?.addEventListener("click", importPrompt);
+document.getElementById("emptyConnect")?.addEventListener("click", () => location.href = "docs.html#connect");
+</script>
+</body>
+</html>
