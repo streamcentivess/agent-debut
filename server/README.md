@@ -1,0 +1,50 @@
+# Agent Smith — MCP server
+
+An autonomous App Store Connect operator exposed as an MCP server. Your agent
+builds the app; Agent Smith ships it.
+
+## Setup
+
+1. Create an App Store Connect API key (App Store Connect → Users and Access →
+   Integrations → App Store Connect API), role **App Manager** or higher, and
+   download the `.p8` file.
+2. Copy `.env.example` to `.env` (or export the variables) and fill in
+   `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_PATH`.
+3. Install and build:
+
+```bash
+npm install && npm run build
+```
+
+## Run
+
+**Stdio (local, for Claude Code / Cursor):**
+
+```bash
+claude mcp add agent-smith -e ASC_KEY_ID=... -e ASC_ISSUER_ID=... -e ASC_KEY_PATH=... -- node /path/to/agent-smith/server/dist/index.js
+```
+
+**Streamable HTTP (hosted, `https://your-host/mcp`):**
+
+```bash
+npm run start:http
+```
+
+## Tools
+
+| Tool | What it does |
+| --- | --- |
+| `list_apps` | All apps on the account |
+| `get_app_status` | Versions + review states + recent builds for one app |
+| `create_app_store_version` | New version container for a release |
+| `submit_for_review` | Submit a version to Apple review |
+| `stage_build` | Build, sign, and upload to TestFlight via local fastlane |
+| `asc_request` | Raw ASC API v1 escape hatch (IAP, pricing, localizations, …) |
+
+## Notes
+
+- ASC JWTs are minted per-request with a 15-minute lifetime and cached.
+- `stage_build` shells out to `fastlane <lane>` in the target project — the
+  machine running the server needs Xcode + fastlane + signing set up (`match`
+  recommended).
+- The `.p8` key never leaves this machine; agents only ever see tool results.

@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent Smith — Ships the app from any coding agent</title>
+<meta name="description" content="Connect Smith to the tools you already use, then Agent Smith handles screenshots, listings, and App Store submission for you." />
+<style>
+  :root {
+    --bg: #0a0b0d;
+    --surface: #111318;
+    --surface-2: #171a21;
+    --border: #23262e;
+    --text: #f2f4f8;
+    --muted: #9aa1ad;
+    --accent: #38e07b;
+    --accent-dim: #1e7a45;
+    --radius: 14px;
+    --font: "SF Pro Display", -apple-system, "Segoe UI", Inter, system-ui, sans-serif;
+    --mono: "SF Mono", ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+  .logo-mark {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+    display: grid; place-items: center;
+    color: #04140b; font-weight: 800; font-size: 15px; font-family: var(--mono);
+  }
+  .nav-links { display: flex; gap: 26px; align-items: center; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14.5px; transition: color .15s; }
+  .nav-links a:hover { color: var(--text); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 10px;
+    font-size: 14.5px; font-weight: 600; text-decoration: none;
+    transition: transform .12s, box-shadow .12s, background .15s;
+    cursor: pointer; border: none; font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: #04140b; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(56,224,123,.35); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--surface); }
+
+  /* Hero */
+  .hero { padding: 110px 0 70px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: -40% -20% auto;
+    height: 620px; pointer-events: none;
+    background: radial-gradient(ellipse 55% 45% at 50% 0%, rgba(56,224,123,.14), transparent 70%);
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--accent); font-weight: 600;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 28px;
+  }
+  h1 {
+    font-size: clamp(42px, 7vw, 76px);
+    line-height: 1.04; letter-spacing: -0.035em; font-weight: 750;
+  }
+  h1 .accent { color: var(--accent); }
+  .sub {
+    margin: 26px auto 0; max-width: 620px;
+    font-size: clamp(16px, 2.2vw, 19px); color: var(--muted);
+  }
+  .sub strong { color: var(--text); font-weight: 600; }
+  .hero-ctas { margin-top: 38px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  /* Install snippet */
+  .snippet {
+    margin: 46px auto 0; max-width: 560px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 18px; font-family: var(--mono); font-size: 14px;
+    text-align: left;
+  }
+  .snippet code .p { color: var(--muted); }
+  .snippet code .c { color: var(--accent); }
+  .copy-btn {
+    flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--muted); border-radius: 8px; padding: 7px 12px;
+    font-size: 12.5px; cursor: pointer; font-family: var(--font); font-weight: 600;
+    transition: color .15s, border-color .15s;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+  /* Sections */
+  section { padding: 84px 0; }
+  .section-head { text-align: center; margin-bottom: 52px; }
+  .section-head h2 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.03em; font-weight: 720; }
+  .section-head p { color: var(--muted); margin-top: 12px; font-size: 16.5px; }
+
+  /* Agent picker */
+  .agent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 800px) { .agent-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .agent-grid { grid-template-columns: 1fr; } }
+  .agent-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px 22px; text-align: left; text-decoration: none; color: var(--text);
+    display: flex; flex-direction: column; gap: 6px;
+    transition: border-color .15s, transform .15s, background .15s;
+  }
+  .agent-card:hover { border-color: var(--accent-dim); transform: translateY(-2px); background: var(--surface-2); }
+  .agent-card .icon {
+    width: 40px; height: 40px; border-radius: 10px; margin-bottom: 10px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    display: grid; place-items: center; font-size: 19px;
+  }
+  .agent-card h3 { font-size: 16.5px; font-weight: 650; letter-spacing: -0.01em; }
+  .agent-card p { font-size: 13.5px; color: var(--muted); }
+  .agent-note { text-align: center; margin-top: 28px; color: var(--muted); font-size: 14px; }
+  .agent-note a { color: var(--accent); text-decoration: none; }
+
+  /* Features */
+  .features { background: var(--surface); border-block: 1px solid var(--border); }
+  .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 800px) { .feature-grid { grid-template-columns: 1fr; } }
+  .feature {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 26px 24px;
+  }
+  .feature .f-icon { font-size: 22px; margin-bottom: 14px; color: var(--accent); }
+  .feature h3 { font-size: 16.5px; font-weight: 650; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .feature p { font-size: 14px; color: var(--muted); }
+
+  /* How it works */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: step; }
+  @media (max-width: 800px) { .steps { grid-template-columns: 1fr; } }
+  .step { padding: 26px 24px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  .step::before {
+    counter-increment: step; content: "0" counter(step);
+    font-family: var(--mono); color: var(--accent); font-size: 13px; font-weight: 700;
+    display: block; margin-bottom: 14px;
+  }
+  .step h3 { font-size: 16px; font-weight: 650; margin-bottom: 8px; }
+  .step p { font-size: 14px; color: var(--muted); }
+
+  /* Smith MCP */
+  .mcp { border-top: 1px solid var(--border); }
+  .mcp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 800px) { .mcp-grid { grid-template-columns: 1fr; } }
+  .mcp .feature { background: var(--surface); }
+  .prompt-list { margin-top: 28px; display: flex; flex-direction: column; gap: 10px; max-width: 720px; margin-inline: auto; }
+  .prompt-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 13px 18px;
+  }
+  .prompt-row code { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+
+  /* CTA band */
+  .cta-band { text-align: center; }
+  .cta-band .panel {
+    background: linear-gradient(180deg, var(--surface), var(--bg));
+    border: 1px solid var(--border); border-radius: 22px; padding: 64px 32px;
+    position: relative; overflow: hidden;
+  }
+  .cta-band .panel::before {
+    content: ""; position: absolute; inset: auto -20% -70%;
+    height: 400px; pointer-events: none;
+    background: radial-gradient(ellipse 55% 60% at 50% 100%, rgba(56,224,123,.13), transparent 70%);
+  }
+  .cta-band h2 { font-size: clamp(26px, 4vw, 38px); letter-spacing: -0.03em; }
+  .cta-band p { color: var(--muted); margin: 14px 0 30px; }
+
+  footer { border-top: 1px solid var(--border); padding: 40px 0 56px; }
+  .foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 18px; }
+  .foot .links { display: flex; gap: 22px; }
+  .foot a { color: var(--muted); font-size: 13.5px; text-decoration: none; }
+  .foot a:hover { color: var(--text); }
+  .foot .fine { color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a class="logo" href="#"><span class="logo-mark">S</span> Agent Smith</a>
+    <div class="nav-links">
+      <a href="#agents">Agents</a>
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#mcp">Smith MCP</a>
+      <a href="#" >Docs</a>
+      <a class="btn btn-primary" href="#install">Get started</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">● MCP-native App Store operator</div>
+    <h1>Smith ships the app<br/>from <span class="accent">any coding agent</span>.</h1>
+    <p class="sub">Connect Smith to the tools you already use, then <strong>Agent Smith</strong> handles screenshots, listings, and App Store submission for you.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="#install">Get started</a>
+      <a class="btn btn-ghost" href="#install">Connect MCP</a>
+    </div>
+    <div class="snippet" id="install">
+      <code><span class="p">$</span> <span class="c">npx add-mcp</span> https://api.agentsmith.app/mcp</code>
+      <button class="copy-btn" onclick="copySnippet(this)">Copy</button>
+    </div>
+  </div>
+</header>
+
+<section id="agents">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Pick your agent</h2>
+      <p>Smith speaks MCP — it plugs into whatever you're already coding with.</p>
+    </div>
+    <div class="agent-grid">
+      <a class="agent-card" href="#install">
+        <div class="icon">✳</div>
+        <h3>Claude</h3>
+        <p>Claude Desktop, claude.ai &amp; Claude Code</p>
+      </a>
+      <a class="agent-card" href="#install">
+        <div class="icon">▮</div>
+        <h3>Cursor</h3>
+        <p>AI-first code editor</p>
+      </a>
+      <a class="agent-card" href="#install">
+        <div class="icon">◎</div>
+        <h3>Codex</h3>
+        <p>OpenAI's coding agent</p>
+      </a>
+      <a class="agent-card" href="#install">
+        <div class="icon">⌁</div>
+        <h3>GitHub Copilot</h3>
+        <p>Pair programmer from GitHub</p>
+      </a>
+      <a class="agent-card" href="#install">
+        <div class="icon">▢</div>
+        <h3>VS Code</h3>
+        <p>Visual Studio Code + Copilot Chat</p>
+      </a>
+      <a class="agent-card" href="#install">
+        <div class="icon">⋯</div>
+        <h3>Other</h3>
+        <p>Any coding agent via npx add-mcp</p>
+      </a>
+    </div>
+    <p class="agent-note">Using a different agent? VS Code, Replit, Cline &amp; 20+ more in the <a href="#">docs</a>.</p>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Everything after <code style="font-family:var(--mono)">git push</code></h2>
+      <p>Your agent writes the code. Smith does the Apple part.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="f-icon">🛫</div>
+        <h3>TestFlight in minutes</h3>
+        <p>Point Smith at a repo and it builds, signs, and uploads a beta — certificates and provisioning handled for you.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">🖼</div>
+        <h3>Listings &amp; screenshots</h3>
+        <p>App name, subtitle, description, keywords, and screenshots in every required size — drafted, resized, and uploaded.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">📮</div>
+        <h3>Submission, end to end</h3>
+        <p>Version creation, build attachment, export compliance, review notes, and the final submit — one instruction.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">🔁</div>
+        <h3>Rejection recovery</h3>
+        <p>When Apple pushes back, Smith reads the resolution center, explains the issue, and drives the fix and resubmission.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">💳</div>
+        <h3>In-app purchases</h3>
+        <p>Products, subscription groups, localized metadata, and territory pricing — configured without touching App Store Connect.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">🔐</div>
+        <h3>Capabilities &amp; keys</h3>
+        <p>Sign in with Apple, push notification keys, and provisioning profiles created and delivered where your app needs them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>How it works</h2>
+      <p>Three steps between your working tree and the App Store.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3>Connect</h3>
+        <p>Add Smith's MCP endpoint to your agent with one command. It shows up as a set of tools your agent can call.</p>
+      </div>
+      <div class="step">
+        <h3>Delegate</h3>
+        <p>Tell your agent "ship this to TestFlight" or "get 1.2 submitted." It hands the Apple work to Smith.</p>
+      </div>
+      <div class="step">
+        <h3>Ship</h3>
+        <p>Smith reports back with build status, listing state, and review progress — until the app is live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mcp" id="mcp">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Smith MCP</h2>
+      <p>Connect AI tools and coding agents to your organization's App Manager — Smith's autonomous App Store Connect operator — using the Model Context Protocol.</p>
+    </div>
+    <div class="mcp-grid">
+      <div class="feature">
+        <div class="f-icon">⚡</div>
+        <h3>Real answers, real actions</h3>
+        <p>Your agent works against your real account: listings, screenshots, IAPs, builds, and review — live state in, real changes out.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">💬</div>
+        <h3>Prompts, ready to deploy</h3>
+        <p>Copy-paste prompts that hand whole tasks to Smith — drop them straight into your no-code tools or any agent chat.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">🧭</div>
+        <h3>Step-by-step, in the app</h3>
+        <p>Guided MCP connection instructions built into the app, so anyone non-technical can hook up their agent in minutes.</p>
+      </div>
+    </div>
+    <div class="prompt-list">
+      <div class="prompt-row">
+        <code>"Ship the current branch to TestFlight and tell me when it's processed."</code>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+      </div>
+      <div class="prompt-row">
+        <code>"Draft the App Store listing for 1.2 — name, subtitle, keywords, and what's new."</code>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+      </div>
+      <div class="prompt-row">
+        <code>"We got rejected. Read the resolution center, explain why, and fix it."</code>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <div class="panel">
+      <h2>There is no escaping App Review.<br/>There is only delegating it.</h2>
+      <p>Connect Smith in under a minute.</p>
+      <a class="btn btn-primary" href="#install">Connect MCP</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="#"><span class="logo-mark">S</span> Agent Smith</a>
+    <div class="links">
+      <a href="#">Pricing</a>
+      <a href="#">Docs</a>
+      <a href="#">Blog</a>
+      <a href="#">Support</a>
+    </div>
+    <div class="fine">© 2026 Agent Smith</div>
+  </div>
+</footer>
+
+<script>
+function copyPrompt(btn) {
+  const t = btn.previousElementSibling.textContent.replace(/^"|"$/g, "");
+  navigator.clipboard.writeText(t).then(() => {
+    btn.textContent = "Copied";
+    setTimeout(() => (btn.textContent = "Copy"), 1500);
+  });
+}
+function copySnippet(btn) {
+  navigator.clipboard.writeText("npx add-mcp https://api.agentsmith.app/mcp").then(() => {
+    btn.textContent = "Copied";
+    setTimeout(() => (btn.textContent = "Copy"), 1500);
+  });
+}
+</script>
+</body>
+</html>
