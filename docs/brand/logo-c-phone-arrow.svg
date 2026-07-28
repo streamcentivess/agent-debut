@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" width="640" height="200">
+  <rect width="640" height="200" fill="#0a0b0d"/>
+  <!-- Mark: phone with an up-arrow screen — web app going up to the store -->
+  <g transform="translate(72,38)">
+    <rect x="0" y="0" width="84" height="124" rx="20" fill="none" stroke="#38e07b" stroke-width="10"/>
+    <g stroke="#f2f4f8" stroke-width="10" stroke-linecap="round" fill="none">
+      <path d="M42 92 V42"/>
+      <path d="M24 58 L42 40 L60 58"/>
+    </g>
+    <rect x="30" y="106" width="24" height="5" rx="2.5" fill="#38e07b" opacity=".7"/>
+  </g>
+  <!-- Wordmark -->
+  <g font-family="'SF Pro Display','Helvetica Neue',Arial,sans-serif">
+    <text x="212" y="112" font-size="56" font-weight="700" letter-spacing="-1">
+      <tspan fill="#f2f4f8">Agent </tspan><tspan fill="#38e07b">Debut</tspan>
+    </text>
+    <text x="215" y="150" font-size="17" font-weight="500" letter-spacing="6" fill="#9aa1ad">SHIP YOUR WEB APP TO MOBILE</text>
+  </g>
+</svg>

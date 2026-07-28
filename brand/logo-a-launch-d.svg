@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" width="640" height="200">
+  <defs>
+    <linearGradient id="g" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1e9e54"/>
+      <stop offset="1" stop-color="#38e07b"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="200" fill="#0a0b0d"/>
+  <!-- Mark: geometric D, counter replaced by a launch arrow -->
+  <g transform="translate(60,40)">
+    <path d="M14 0 H52 A60 60 0 0 1 52 120 H14 Z M14 0" fill="none" stroke="url(#g)" stroke-width="26" stroke-linejoin="round" transform="translate(13,13) scale(0.79)"/>
+    <!-- arrow in the bowl -->
+    <g transform="translate(34,60)" stroke="#f2f4f8" stroke-width="11" stroke-linecap="round" fill="none">
+      <path d="M-6 16 L20 -10"/>
+      <path d="M4 -12 H22 V6" fill="none"/>
+    </g>
+  </g>
+  <!-- Wordmark -->
+  <g font-family="'SF Pro Display','Helvetica Neue',Arial,sans-serif">
+    <text x="200" y="112" font-size="56" font-weight="700" letter-spacing="-1">
+      <tspan fill="#f2f4f8">Agent </tspan><tspan fill="#38e07b">Debut</tspan>
+    </text>
+    <text x="203" y="150" font-size="17" font-weight="500" letter-spacing="6" fill="#9aa1ad">SHIP YOUR WEB APP TO MOBILE</text>
+  </g>
+</svg>
