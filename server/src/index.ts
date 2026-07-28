@@ -5,4 +5,4 @@ import { createServer } from "./server.js";
 const server = createServer();
 const transport = new StdioServerTransport();
 await server.connect(transport);
-console.error("agent-smith MCP server running on stdio");
+console.error("agent-jones MCP server running on stdio");

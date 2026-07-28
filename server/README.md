@@ -1,7 +1,7 @@
-# Agent Smith — MCP server
+# Agent Jones — MCP server
 
 An autonomous App Store Connect operator exposed as an MCP server. Your agent
-builds the app; Agent Smith ships it.
+builds the app; Agent Jones ships it.
 
 ## Setup
 
@@ -21,7 +21,7 @@ npm install && npm run build
 **Stdio (local, for Claude Code / Cursor):**
 
 ```bash
-claude mcp add agent-smith -e ASC_KEY_ID=... -e ASC_ISSUER_ID=... -e ASC_KEY_PATH=... -- node /path/to/agent-smith/server/dist/index.js
+claude mcp add agent-jones -e ASC_KEY_ID=... -e ASC_ISSUER_ID=... -e ASC_KEY_PATH=... -- node /path/to/agent-jones/server/dist/index.js
 ```
 
 **Streamable HTTP (hosted, `https://your-host/mcp`):**

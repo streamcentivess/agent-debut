@@ -35,7 +35,7 @@ function errorText(err: unknown) {
 
 export function createServer(): McpServer {
   const server = new McpServer({
-    name: "agent-smith",
+    name: "agent-jones",
     version: "0.1.0",
   });
 
@@ -197,7 +197,7 @@ export function createServer(): McpServer {
     {
       title: "Import a GitHub repo",
       description:
-        "Clone (or update) a GitHub repository into Agent Smith's workspace — the entry point for converting a web app from Lovable, Emergent, Bolt, Replit, v0, or any repo into a mobile app. Returns the local path plus detected framework.",
+        "Clone (or update) a GitHub repository into Agent Jones's workspace — the entry point for converting a web app from Lovable, Emergent, Bolt, Replit, v0, or any repo into a mobile app. Returns the local path plus detected framework.",
       inputSchema: {
         repo_url: z.string().describe("Git clone URL, e.g. https://github.com/user/app.git"),
         branch: z.string().optional().describe("Branch to clone (default: repo default)"),

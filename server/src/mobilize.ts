@@ -6,9 +6,9 @@ import { homedir } from "node:os";
 
 const exec = promisify(execFile);
 
-export const WORKSPACES = join(homedir(), ".agent-smith", "workspaces");
+export const WORKSPACES = join(homedir(), ".agent-jones", "workspaces");
 
-/** Shallow-clone (or update) a GitHub repo into the Agent Smith workspace. */
+/** Shallow-clone (or update) a GitHub repo into the Agent Jones workspace. */
 export async function cloneRepo(repoUrl: string, branch?: string): Promise<string> {
   mkdirSync(WORKSPACES, { recursive: true });
   const name = repoUrl
@@ -124,7 +124,7 @@ async function grepFiles(dir: string, pattern: string): Promise<string[]> {
 
 /**
  * Scan a web app for the things Apple and Google most often reject
- * wrapped web apps for, so Smith (or the calling agent) can refactor them.
+ * wrapped web apps for, so Jones (or the calling agent) can refactor them.
  */
 export async function storeReadinessScan(dir: string): Promise<Finding[]> {
   const findings: Finding[] = [];
@@ -194,7 +194,7 @@ export async function storeReadinessScan(dir: string): Promise<Finding[]> {
     severity: "info",
     rule: "Minimum functionality (App Store 4.2)",
     detail:
-      "Pure web wrappers get rejected as 'just a website'. Add native value before submitting: push notifications, offline support, haptics, share sheet, or widgets — Smith can wire Capacitor plugins for these.",
+      "Pure web wrappers get rejected as 'just a website'. Add native value before submitting: push notifications, offline support, haptics, share sheet, or widgets — Jones can wire Capacitor plugins for these.",
     files: [],
   });
 
@@ -254,7 +254,7 @@ export async function mobilize(
       "Run store_readiness_check and refactor any blockers (payments → IAP/Play Billing, account deletion, privacy policy).",
       "Generate app icons and splash screens (npx @capacitor/assets generate).",
       "Add at least one native capability (push, haptics, share) to clear App Store 4.2 minimum functionality.",
-      "iOS: open ios/App in Xcode once for signing, or hand the repo to Smith's stage_build for TestFlight.",
+      "iOS: open ios/App in Xcode once for signing, or hand the repo to Jones's stage_build for TestFlight.",
       "Android: build an .aab with cd android && ./gradlew bundleRelease for Play Console.",
     ],
   };

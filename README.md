@@ -1,7 +1,7 @@
-# Agent Smith
+# Agent Jones
 
-**Smith ships the app from any coding agent.** Connect Smith to the tools you
-already use, then Agent Smith handles screenshots, listings, and App Store
+**Jones ships the app from any coding agent.** Connect Jones to the tools you
+already use, then Agent Jones handles screenshots, listings, and App Store
 submission for you.
 
 - [`docs/`](docs/) — marketing landing page (static, zero dependencies; open

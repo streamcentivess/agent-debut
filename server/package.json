@@ -1,10 +1,10 @@
 {
-  "name": "agent-smith-mcp",
+  "name": "agent-jones-mcp",
   "version": "0.1.0",
-  "description": "Agent Smith — an autonomous App Store Connect operator, exposed as an MCP server. Your agent builds the app. Agent Smith ships it.",
+  "description": "Agent Jones — an autonomous App Store Connect operator, exposed as an MCP server. Your agent builds the app. Agent Jones ships it.",
   "type": "module",
   "bin": {
-    "agent-smith-mcp": "dist/index.js"
+    "agent-jones-mcp": "dist/index.js"
   },
   "main": "dist/index.js",
   "scripts": {

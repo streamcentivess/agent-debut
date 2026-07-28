@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Agent Smith Docs — connect in 5 minutes</title>
-<meta name="description" content="Plain-English guide to connecting Agent Smith to your coding agent and shipping your first app." />
+<title>Agent Jones Docs — connect in 5 minutes</title>
+<meta name="description" content="Plain-English guide to connecting Agent Jones to your coding agent and shipping your first app." />
 <style>
   :root {
     --bg: #0a0b0d; --surface: #111318; --surface-2: #171a21; --border: #23262e;
@@ -93,7 +93,7 @@
 
 <nav>
   <div class="nav-inner">
-    <a class="logo" href="index.html"><span class="logo-mark">S</span> Agent Smith</a>
+    <a class="logo" href="index.html"><span class="logo-mark">J</span> Agent Jones</a>
     <div class="nav-links">
       <a href="index.html#features">Features</a>
       <a href="index.html#pricing">Pricing</a>
@@ -107,12 +107,12 @@
     <h1>Docs</h1>
     <p>Everything here is written so a non-technical founder can follow it. If you can copy and paste, you can ship an app.</p>
     <div class="toc">
-      <a href="#what">What is Smith?</a>
+      <a href="#what">What is Jones?</a>
       <a href="#connect">Connect your agent</a>
       <a href="#first-ship">Ship your first app</a>
       <a href="#web-to-mobile">Web app → mobile app</a>
       <a href="#prompts">Prompts that work</a>
-      <a href="#tools">What Smith can do</a>
+      <a href="#tools">What Jones can do</a>
       <a href="#credits">Credits</a>
       <a href="#help">Troubleshooting</a>
     </div>
@@ -121,9 +121,9 @@
 
 <section id="what">
   <div class="wrap">
-    <h2>What is Smith?</h2>
-    <p class="lead"><strong>Agent Smith is a co-worker for the app-store part of your app.</strong> Your coding agent (Claude, Cursor, Codex…) writes the code. Smith does everything Apple and Google make you do afterward: builds, signing, screenshots, listings, in-app purchases, review, and rejections.</p>
-    <p>You never learn App Store Connect. You just tell your agent what you want — <em>"put this on TestFlight"</em>, <em>"submit version 1.2"</em> — and the agent hands the work to Smith.</p>
+    <h2>What is Jones?</h2>
+    <p class="lead"><strong>Agent Jones is a co-worker for the app-store part of your app.</strong> Your coding agent (Claude, Cursor, Codex…) writes the code. Jones does everything Apple and Google make you do afterward: builds, signing, screenshots, listings, in-app purchases, review, and rejections.</p>
+    <p>You never learn App Store Connect. You just tell your agent what you want — <em>"put this on TestFlight"</em>, <em>"submit version 1.2"</em> — and the agent hands the work to Jones.</p>
     <div class="tip"><strong>Non-technical?</strong> That's fine. The app has a guided, step-by-step connect flow that does everything below for you with buttons instead of a terminal.</div>
   </div>
 </section>
@@ -131,17 +131,17 @@
 <section id="connect">
   <div class="wrap">
     <h2>Connect your agent (5 minutes)</h2>
-    <p>Smith speaks <strong>MCP</strong> (Model Context Protocol) — the standard way agents connect to outside tools. You connect once; after that your agent can see and use Smith in every conversation.</p>
+    <p>Jones speaks <strong>MCP</strong> (Model Context Protocol) — the standard way agents connect to outside tools. You connect once; after that your agent can see and use Jones in every conversation.</p>
     <p>The universal way, which works with 20+ agents:</p>
-    <pre>npx add-mcp https://api.agentsmith.app/mcp</pre>
+    <pre>npx add-mcp https://api.agentjones.app/mcp</pre>
     <p>Or pick your agent:</p>
 
     <details class="agent">
       <summary>Claude Code</summary>
       <div class="inner">
         <p>Open your terminal in any project and run:</p>
-        <pre>claude mcp add --transport http smith https://api.agentsmith.app/mcp</pre>
-        <p>Then start Claude Code and type <code class="inline">"list my apps with smith"</code> to confirm it's connected.</p>
+        <pre>claude mcp add --transport http jones https://api.agentjones.app/mcp</pre>
+        <p>Then start Claude Code and type <code class="inline">"list my apps with jones"</code> to confirm it's connected.</p>
       </div>
     </details>
 
@@ -151,7 +151,7 @@
         <ol>
           <li>Open <strong>Settings → Connectors</strong>.</li>
           <li>Click <strong>Add custom connector</strong>.</li>
-          <li>Name it <strong>Smith</strong> and paste <code class="inline">https://api.agentsmith.app/mcp</code>.</li>
+          <li>Name it <strong>Jones</strong> and paste <code class="inline">https://api.agentjones.app/mcp</code>.</li>
           <li>Click <strong>Add</strong>, then approve the connection when asked.</li>
         </ol>
       </div>
@@ -163,10 +163,10 @@
         <p>Create (or open) the file <code class="inline">.cursor/mcp.json</code> in your project and add:</p>
         <pre>{
   "mcpServers": {
-    "smith": { "url": "https://api.agentsmith.app/mcp" }
+    "jones": { "url": "https://api.agentjones.app/mcp" }
   }
 }</pre>
-        <p>Restart Cursor. Smith appears under <strong>Settings → MCP</strong>.</p>
+        <p>Restart Cursor. Jones appears under <strong>Settings → MCP</strong>.</p>
       </div>
     </details>
 
@@ -174,8 +174,8 @@
       <summary>Codex (OpenAI)</summary>
       <div class="inner">
         <p>Add this to <code class="inline">~/.codex/config.toml</code>:</p>
-        <pre>[mcp_servers.smith]
-url = "https://api.agentsmith.app/mcp"</pre>
+        <pre>[mcp_servers.jones]
+url = "https://api.agentjones.app/mcp"</pre>
       </div>
     </details>
 
@@ -183,7 +183,7 @@ url = "https://api.agentsmith.app/mcp"</pre>
       <summary>VS Code + Copilot Chat</summary>
       <div class="inner">
         <p>Run this in a terminal:</p>
-        <pre>code --add-mcp '{"name":"smith","url":"https://api.agentsmith.app/mcp"}'</pre>
+        <pre>code --add-mcp '{"name":"jones","url":"https://api.agentjones.app/mcp"}'</pre>
         <p>Or add the same server in <strong>Settings → MCP Servers</strong>.</p>
       </div>
     </details>
@@ -191,13 +191,13 @@ url = "https://api.agentsmith.app/mcp"</pre>
     <details class="agent">
       <summary>Something else (Replit, Cline, Windsurf, …)</summary>
       <div class="inner">
-        <p>Any MCP-capable agent works. Look for "MCP servers" in its settings and paste <code class="inline">https://api.agentsmith.app/mcp</code>, or use the universal command at the top of this section.</p>
+        <p>Any MCP-capable agent works. Look for "MCP servers" in its settings and paste <code class="inline">https://api.agentjones.app/mcp</code>, or use the universal command at the top of this section.</p>
       </div>
     </details>
 
     <h3>Then connect your accounts</h3>
     <ol>
-      <li><strong>App Store Connect</strong> — sign in once in the Smith app; this unlocks your 500 free credits. (No Apple account yet? Smith walks you through creating one — $99/yr from Apple.)</li>
+      <li><strong>App Store Connect</strong> — sign in once in the Jones app; this unlocks your 500 free credits. (No Apple account yet? Jones walks you through creating one — $99/yr from Apple.)</li>
       <li><strong>Google Play</strong> (optional) — connect your Play Console the same way ($25 one-time from Google).</li>
       <li><strong>GitHub</strong> (optional) — needed only for web→mobile conversion and builds from source.</li>
     </ol>
@@ -209,11 +209,11 @@ url = "https://api.agentsmith.app/mcp"</pre>
     <h2>Ship your first app</h2>
     <p>Once connected, shipping is a conversation. A typical first run:</p>
     <ol>
-      <li><strong>Say what you want.</strong> In your agent, type: <em>"Use Smith to ship this app to TestFlight."</em></li>
-      <li><strong>Smith builds and uploads.</strong> It clones your repo, builds, signs, and uploads. First time usually takes ~15 minutes.</li>
-      <li><strong>Check status anytime.</strong> Ask <em>"what's the status of my build?"</em> — Smith answers with the live state from Apple.</li>
-      <li><strong>Go to the store.</strong> Say <em>"submit it for review"</em>. Smith creates the version, attaches the build, fills the metadata, and submits.</li>
-      <li><strong>If Apple rejects it</strong> — say <em>"handle the rejection"</em>. Smith reads Apple's feedback, explains it in plain English, fixes what it can, and resubmits.</li>
+      <li><strong>Say what you want.</strong> In your agent, type: <em>"Use Jones to ship this app to TestFlight."</em></li>
+      <li><strong>Jones builds and uploads.</strong> It clones your repo, builds, signs, and uploads. First time usually takes ~15 minutes.</li>
+      <li><strong>Check status anytime.</strong> Ask <em>"what's the status of my build?"</em> — Jones answers with the live state from Apple.</li>
+      <li><strong>Go to the store.</strong> Say <em>"submit it for review"</em>. Jones creates the version, attaches the build, fills the metadata, and submits.</li>
+      <li><strong>If Apple rejects it</strong> — say <em>"handle the rejection"</em>. Jones reads Apple's feedback, explains it in plain English, fixes what it can, and resubmits.</li>
     </ol>
   </div>
 </section>
@@ -221,11 +221,11 @@ url = "https://api.agentsmith.app/mcp"</pre>
 <section id="web-to-mobile">
   <div class="wrap">
     <h2>Web app → mobile app</h2>
-    <p class="lead">Built your app on <strong>Lovable, Emergent, Bolt, Replit, or v0</strong>? Smith turns it into a real iOS and Android app.</p>
+    <p class="lead">Built your app on <strong>Lovable, Emergent, Bolt, Replit, or v0</strong>? Jones turns it into a real iOS and Android app.</p>
     <ol>
-      <li><strong>Connect GitHub.</strong> Your builder already pushes your code to a GitHub repo — connect it to Smith.</li>
-      <li><strong>Smith analyzes.</strong> It detects your framework and scans for the things Apple and Google reject: web checkout (must become in-app purchases), missing account deletion, missing privacy policy, and "it's just a website" risk.</li>
-      <li><strong>Smith refactors.</strong> It wraps your app in a native shell, adds the iOS and Android projects, and hands your coding agent a fix list for anything that needs real code changes.</li>
+      <li><strong>Connect GitHub.</strong> Your builder already pushes your code to a GitHub repo — connect it to Jones.</li>
+      <li><strong>Jones analyzes.</strong> It detects your framework and scans for the things Apple and Google reject: web checkout (must become in-app purchases), missing account deletion, missing privacy policy, and "it's just a website" risk.</li>
+      <li><strong>Jones refactors.</strong> It wraps your app in a native shell, adds the iOS and Android projects, and hands your coding agent a fix list for anything that needs real code changes.</li>
       <li><strong>Ship both stores.</strong> Icons, splash screens, signed builds — TestFlight and Play Console.</li>
     </ol>
     <div class="tip"><strong>One prompt to start:</strong> <em>"Take github.com/me/my-app and get it ready for the App Store and Google Play."</em></div>
@@ -235,7 +235,7 @@ url = "https://api.agentsmith.app/mcp"</pre>
 <section id="prompts">
   <div class="wrap">
     <h2>Prompts that work</h2>
-    <p>Paste any of these into your agent (or your no-code tool's chat) once Smith is connected:</p>
+    <p>Paste any of these into your agent (or your no-code tool's chat) once Jones is connected:</p>
     <div class="card">
       <p>• <em>"Ship the current branch to TestFlight and tell me when it's processed."</em></p>
       <p>• <em>"Draft the App Store listing for 1.2 — name, subtitle, keywords, and what's new."</em></p>
@@ -249,7 +249,7 @@ url = "https://api.agentsmith.app/mcp"</pre>
 
 <section id="tools">
   <div class="wrap">
-    <h2>What Smith can do</h2>
+    <h2>What Jones can do</h2>
     <p>These are the tools your agent sees. You never call them yourself — your agent picks the right one from your plain-English request.</p>
     <table>
       <tr><th>Tool</th><th>In plain English</th></tr>
@@ -270,26 +270,26 @@ url = "https://api.agentsmith.app/mcp"</pre>
 <section id="credits">
   <div class="wrap">
     <h2>Credits</h2>
-    <p>Credits are what Smith spends when it works — a build costs more than a status check. You get <strong>500 free credits</strong> for your first 30 days when you connect App Store Connect. <strong>Pro ($29.99/mo)</strong> includes 2,500 credits every month, and optional auto top-ups add 2,000 credits for $15 with a monthly cap you control. Nothing ever stops mid-task. Details on the <a href="index.html#pricing" style="color:var(--accent)">pricing page</a>.</p>
+    <p>Credits are what Jones spends when it works — a build costs more than a status check. You get <strong>500 free credits</strong> for your first 30 days when you connect App Store Connect. <strong>Pro ($29.99/mo)</strong> includes 2,500 credits every month, and optional auto top-ups add 2,000 credits for $15 with a monthly cap you control. Nothing ever stops mid-task. Details on the <a href="index.html#pricing" style="color:var(--accent)">pricing page</a>.</p>
   </div>
 </section>
 
 <section id="help">
   <div class="wrap">
     <h2>Troubleshooting</h2>
-    <h3>My agent doesn't see Smith</h3>
-    <p>Restart the agent after adding the server — most only load MCP connections on startup. Then ask it to "list smith's tools".</p>
+    <h3>My agent doesn't see Jones</h3>
+    <p>Restart the agent after adding the server — most only load MCP connections on startup. Then ask it to "list jones's tools".</p>
     <h3>"Missing App Store Connect credentials"</h3>
-    <p>You haven't connected your Apple account yet. Open the Smith app and finish the App Store Connect step, or set your API key if you're self-hosting.</p>
+    <p>You haven't connected your Apple account yet. Open the Jones app and finish the App Store Connect step, or set your API key if you're self-hosting.</p>
     <h3>The build failed</h3>
-    <p>Ask your agent: <em>"show me smith's build error and fix it."</em> That's the whole workflow — the agent reads the log, changes the code, and re-runs the build.</p>
+    <p>Ask your agent: <em>"show me jones's build error and fix it."</em> That's the whole workflow — the agent reads the log, changes the code, and re-runs the build.</p>
     <h3>Anything else</h3>
-    <p>Email <a href="mailto:support@agentsmith.app" style="color:var(--accent)">support@agentsmith.app</a> — Pro gets priority.</p>
+    <p>Email <a href="mailto:support@agentjones.app" style="color:var(--accent)">support@agentjones.app</a> — Pro gets priority.</p>
   </div>
 </section>
 
 <footer>
-  <div class="wrap">© 2026 Agent Smith · <a href="index.html">Home</a> · <a href="index.html#pricing">Pricing</a></div>
+  <div class="wrap">© 2026 Agent Jones · <a href="index.html">Home</a> · <a href="index.html#pricing">Pricing</a></div>
 </footer>
 
 </body>
