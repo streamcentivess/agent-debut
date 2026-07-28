@@ -32,22 +32,41 @@
   .stage {
     position: relative; z-index: 2; min-height: 100vh;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 90px 20px 60px; text-align: center;
+    padding: 90px 20px 20px; text-align: center;
   }
-  .oracle { width: min(560px, 92vw); filter: drop-shadow(0 30px 60px rgba(0,0,0,.6)); animation: rise 1.1s var(--ease) both; }
+
+  /* ——— the cinematic scene ——— */
+  .oracle-wrap {
+    position: relative; width: min(520px, 92vw);
+    animation: rise 1.1s var(--ease) both;
+  }
   @keyframes rise { from { opacity: 0; transform: translateY(30px) scale(.97); } }
+  .oracle-img {
+    width: 100%; height: auto; display: block; border-radius: 24px;
+    -webkit-mask-image: radial-gradient(115% 115% at 50% 42%, #000 62%, transparent 99%);
+    mask-image: radial-gradient(115% 115% at 50% 42%, #000 62%, transparent 99%);
+  }
+  .overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 
-  /* the reflection in the left lens: a human approaches and reaches for the red pill */
-  #reflect { transform-origin: 398px 208px; transition: transform 1s var(--ease); }
-  #armIdle { transition: opacity .5s ease; }
-  #armReach { transition: opacity .7s ease .15s; }
-  .oracle.reach #reflect { transform: scale(1.18) translate(5px, 2px); }
-  .oracle.reach #armIdle { opacity: 0; }
-  .oracle.reach #armReach { opacity: 1; }
-  #redPillArt, #bluePillArt { transition: transform .4s var(--ease); transform-origin: center; transform-box: fill-box; }
-  .oracle.reach #redPillArt { transform: scale(1.12); }
+  /* reflection in the (viewer-left) lens: a human approaches & reaches for the red pill */
+  #reflect { transform-origin: 218px 141px; transition: transform 1.1s var(--ease), opacity .8s ease; opacity: 0; }
+  .oracle-wrap.reach #reflect { opacity: .95; transform: scale(1.22) translate(2px, 1px); }
+  #armIdle { transition: opacity .45s ease; }
+  #armReach { transition: opacity .6s ease .2s; }
+  .oracle-wrap.reach #armIdle { opacity: 0; }
+  .oracle-wrap.reach #armReach { opacity: 1; }
+  /* lens shimmer while the reflection is active */
+  #lensGlintL { transition: opacity .8s ease; opacity: 0; }
+  .oracle-wrap.reach #lensGlintL { opacity: .5; }
 
-  h1 { font-size: clamp(26px, 4.6vw, 40px); letter-spacing: -0.03em; font-weight: 740; margin-top: 18px; animation: rise 1.1s var(--ease) both .15s; }
+  /* palm glows */
+  #redGlow, #blueGlow { animation: pulse 3.2s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+  #blueGlow { animation-delay: -1.6s; }
+  @keyframes pulse { 50% { opacity: .55; } }
+  .oracle-wrap.reach #redGlow { animation: pulseHot 1.1s ease-in-out infinite; }
+  @keyframes pulseHot { 50% { opacity: 1; transform: scale(1.18); } }
+
+  h1 { font-size: clamp(26px, 4.6vw, 40px); letter-spacing: -0.03em; font-weight: 740; margin-top: 20px; animation: rise 1.1s var(--ease) both .15s; }
   .sub { color: var(--muted); margin-top: 10px; max-width: 480px; font-size: 15.5px; animation: rise 1.1s var(--ease) both .28s; }
 
   .choices { display: flex; gap: 16px; margin-top: 30px; flex-wrap: wrap; justify-content: center; animation: rise 1.1s var(--ease) both .4s; }
@@ -65,7 +84,7 @@
   .btn-blue .dot { background: radial-gradient(120% 160% at 30% 20%, #fff6, transparent 60%), #1e3a8a; }
   .btn-blue:hover { transform: translateY(-2px); background: var(--surface); border-color: color-mix(in srgb, var(--blue) 45%, var(--border)); }
 
-  /* Sign-in form (revealed by the red pill) */
+  /* sign-in form (revealed by the red pill) */
   .gate { display: none; width: min(400px, 92vw); margin-top: 34px; }
   .gate.show { display: block; animation: rise .7s var(--ease) both; }
   .gate .panel {
@@ -105,224 +124,62 @@
 </div>
 
 <main class="stage">
-  <!-- The Operator: an original android in pince-nez glasses, offering the choice -->
-  <svg class="oracle" viewBox="0 0 900 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A chrome android wearing small round glasses holds out two pills: a red one and a blue one.">
-    <defs>
-      <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#f0f2f6"/>
-        <stop offset=".55" stop-color="#c3c9d4"/>
-        <stop offset="1" stop-color="#8b93a1"/>
-      </linearGradient>
-      <linearGradient id="metalDark" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#aab1bd"/>
-        <stop offset="1" stop-color="#6a7280"/>
-      </linearGradient>
-      <linearGradient id="coat" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#181b21"/>
-        <stop offset="1" stop-color="#0a0b0d"/>
-      </linearGradient>
-      <radialGradient id="lens" cx=".35" cy=".3" r="1">
-        <stop offset="0" stop-color="#2a3038"/>
-        <stop offset=".6" stop-color="#101318"/>
-        <stop offset="1" stop-color="#05070a"/>
-      </radialGradient>
-      <radialGradient id="pillR" cx=".3" cy=".25" r="1">
-        <stop offset="0" stop-color="#fda4a4"/>
-        <stop offset=".5" stop-color="#ef4444"/>
-        <stop offset="1" stop-color="#7f1d1d"/>
-      </radialGradient>
-      <radialGradient id="pillB" cx=".3" cy=".25" r="1">
-        <stop offset="0" stop-color="#93c5fd"/>
-        <stop offset=".5" stop-color="#3b82f6"/>
-        <stop offset="1" stop-color="#1e3a8a"/>
-      </radialGradient>
-      <filter id="glowG" x="-80%" y="-80%" width="260%" height="260%">
-        <feGaussianBlur stdDeviation="14" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-      <filter id="glowPill" x="-120%" y="-120%" width="340%" height="340%">
-        <feGaussianBlur stdDeviation="7" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-      <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
-        <feGaussianBlur stdDeviation="3"/>
-      </filter>
-      <linearGradient id="headForm" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#000000" stop-opacity=".22"/>
-        <stop offset=".25" stop-color="#000000" stop-opacity="0"/>
-        <stop offset=".75" stop-color="#000000" stop-opacity="0"/>
-        <stop offset="1" stop-color="#38e07b" stop-opacity=".14"/>
-      </linearGradient>
-      <radialGradient id="visor" cx=".32" cy=".2" r="1.1">
-        <stop offset="0" stop-color="#252c36"/>
-        <stop offset=".45" stop-color="#0d1117"/>
-        <stop offset="1" stop-color="#04060a"/>
-      </radialGradient>
-      <linearGradient id="shadeL" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#000" stop-opacity=".35"/>
-        <stop offset=".6" stop-color="#000" stop-opacity="0"/>
-      </linearGradient>
-      <linearGradient id="shadeR" x1="1" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#38e07b" stop-opacity=".18"/>
-        <stop offset=".6" stop-color="#000" stop-opacity="0"/>
-      </linearGradient>
-      <clipPath id="clipL"><circle cx="398" cy="208" r="47"/></clipPath>
-      <clipPath id="clipR"><circle cx="502" cy="208" r="47"/></clipPath>
-    </defs>
+  <div class="oracle-wrap" id="oracleWrap">
+    <img class="oracle-img" src="brand/oracle.jpg" width="1024" height="1024"
+         alt="A chrome android wearing small round glasses holds out two pills: a red one and a blue one." />
+    <!-- interactive layer, mapped to the image (512×512 space) -->
+    <svg class="overlay" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <radialGradient id="glowR" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#ff6b6b" stop-opacity=".8"/>
+          <stop offset=".5" stop-color="#ef4444" stop-opacity=".28"/>
+          <stop offset="1" stop-color="#ef4444" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="glowB" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#93c5fd" stop-opacity=".7"/>
+          <stop offset=".5" stop-color="#3b82f6" stop-opacity=".25"/>
+          <stop offset="1" stop-color="#3b82f6" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="pillRr" cx=".3" cy=".25" r="1">
+          <stop offset="0" stop-color="#fda4a4"/><stop offset=".5" stop-color="#ef4444"/><stop offset="1" stop-color="#7f1d1d"/>
+        </radialGradient>
+        <clipPath id="lensL"><circle cx="221" cy="141" r="24"/></clipPath>
+        <filter id="tinyGlow" x="-120%" y="-120%" width="340%" height="340%">
+          <feGaussianBlur stdDeviation="2.2" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
 
-    <!-- matrix-green rim light behind the figure -->
-    <ellipse cx="450" cy="280" rx="270" ry="250" fill="#38e07b" opacity=".1" filter="url(#soft)"/>
-    <ellipse cx="450" cy="260" rx="175" ry="185" fill="#38e07b" opacity=".09" filter="url(#soft)"/>
+      <!-- palm glows over the rendered pills -->
+      <circle id="redGlow" cx="120" cy="374" r="46" fill="url(#glowR)" opacity=".7"/>
+      <circle id="blueGlow" cx="366" cy="374" r="46" fill="url(#glowB)" opacity=".7"/>
 
-    <!-- ——— torso: engineered white shell over dark under-suit ——— -->
-    <!-- under-suit -->
-    <path d="M240 640 C245 520 300 455 380 430 L520 430 C600 455 655 520 660 640 Z" fill="#15181d"/>
-    <!-- shoulder caps -->
-    <ellipse cx="303" cy="452" rx="80" ry="56" fill="url(#metal)"/>
-    <ellipse cx="303" cy="452" rx="80" ry="56" fill="url(#shadeL)" opacity=".5"/>
-    <ellipse cx="597" cy="452" rx="80" ry="56" fill="url(#metal)"/>
-    <ellipse cx="597" cy="452" rx="80" ry="56" fill="url(#shadeR)" opacity=".5"/>
-    <!-- chest plates -->
-    <path d="M330 470 C335 440 380 425 442 424 L442 560 C400 560 355 540 338 510 C332 498 330 484 330 470 Z" fill="url(#metal)"/>
-    <path d="M570 470 C565 440 520 425 458 424 L458 560 C500 560 545 540 562 510 C568 498 570 484 570 470 Z" fill="url(#metal)"/>
-    <path d="M330 470 C335 440 380 425 442 424 L442 470 Z" fill="#ffffff" opacity=".18"/>
-    <path d="M570 470 C565 440 520 425 458 424 L458 470 Z" fill="#ffffff" opacity=".18"/>
-    <!-- center seam + chest light -->
-    <rect x="444" y="424" width="12" height="140" fill="#0d0f13"/>
-    <circle cx="450" cy="470" r="7" fill="#38e07b" opacity=".9" filter="url(#glowPill)"/>
-    <!-- collar ring -->
-    <path d="M395 424 C400 400 500 400 505 424 C480 416 420 416 395 424 Z" fill="#2a2f37"/>
-
-    <!-- neck: dark segmented column -->
-    <rect x="424" y="300" width="52" height="72" rx="16" fill="#232830"/>
-    <rect x="424" y="322" width="52" height="5" rx="2.5" fill="#3a414c"/>
-    <rect x="424" y="338" width="52" height="5" rx="2.5" fill="#3a414c"/>
-    <rect x="424" y="354" width="52" height="5" rx="2.5" fill="#3a414c"/>
-
-    <!-- ——— head: smooth helmet shell + glossy black visor ——— -->
-    <path d="M450 58 C546 58 592 126 590 204 C588 278 552 326 450 326 C348 326 312 278 310 204 C308 126 354 58 450 58 Z" fill="url(#metal)"/>
-    <!-- 3D form shading on the shell -->
-    <path d="M450 58 C546 58 592 126 590 204 C588 278 552 326 450 326 C348 326 312 278 310 204 C308 126 354 58 450 58 Z" fill="url(#headForm)"/>
-    <!-- crown specular -->
-    <path d="M370 92 C400 70 500 70 530 92" stroke="#ffffff" stroke-width="8" opacity=".35" fill="none" stroke-linecap="round" filter="url(#soft)"/>
-    <!-- visor: glossy black glass face -->
-    <path d="M352 150 C352 108 396 96 450 96 C504 96 548 108 548 150 L548 218 C548 278 508 302 450 302 C392 302 352 278 352 218 Z" fill="url(#visor)"/>
-    <path d="M352 150 C352 108 396 96 450 96 C504 96 548 108 548 150 L548 218 C548 278 508 302 450 302 C392 302 352 278 352 218 Z" fill="none" stroke="#78808e" stroke-width="2" opacity=".6"/>
-    <!-- visor specular sweep -->
-    <path d="M372 130 C395 108 460 102 500 110" stroke="#aeb6c2" stroke-width="10" opacity=".22" fill="none" stroke-linecap="round" filter="url(#soft)"/>
-    <!-- jaw seam -->
-    <path d="M368 292 C410 312 490 312 532 292" stroke="#8b93a1" stroke-width="2" opacity=".5" fill="none"/>
-    <!-- ear pods -->
-    <rect x="298" y="188" width="22" height="52" rx="11" fill="#232830"/>
-    <rect x="580" y="188" width="22" height="52" rx="11" fill="#232830"/>
-    <circle cx="309" cy="214" r="5" fill="#38e07b" opacity=".9"/>
-    <circle cx="591" cy="214" r="5" fill="#38e07b" opacity=".9"/>
-
-    <!-- ——— pince-nez glasses over the visor ——— -->
-    <g>
-      <circle cx="398" cy="208" r="50" fill="url(#lens)" stroke="#e5e9ef" stroke-width="3.5"/>
-      <circle cx="502" cy="208" r="50" fill="url(#lens)" stroke="#e5e9ef" stroke-width="3.5"/>
-      <path d="M446 196 C450 188 450 188 454 196" fill="none" stroke="#e5e9ef" stroke-width="4.5" stroke-linecap="round"/>
-
-      <!-- LEFT LENS: the human reflection reaching for the red pill -->
-      <g clip-path="url(#clipL)">
-        <g id="reflect" opacity=".9">
-          <!-- silhouetted figure (dim, green-lit) -->
-          <circle cx="382" cy="196" r="9" fill="#102b1e"/>
-          <path d="M366 228 C368 210 396 210 398 228 L398 246 L366 246 Z" fill="#102b1e"/>
-          <!-- idle arm (at side) -->
-          <path id="armIdle" d="M394 214 C398 222 399 230 397 240" stroke="#102b1e" stroke-width="7" stroke-linecap="round" fill="none"/>
-          <!-- reaching arm + hand (hidden until approach) -->
+      <!-- the human reflection inside the viewer-left lens -->
+      <g clip-path="url(#lensL)">
+       <g transform="translate(3,0)">
+        <g id="reflect">
+          <!-- dim green-lit silhouette -->
+          <circle cx="212" cy="136" r="4.6" fill="#0e2a1d"/>
+          <path d="M204 152 C205 143 219 143 220 152 L220 160 L204 160 Z" fill="#0e2a1d"/>
+          <path d="M208 133 C209.5 131 213 130.5 215 132" stroke="#38e07b" stroke-width=".9" opacity=".55" fill="none"/>
+          <!-- idle arm -->
+          <path id="armIdle" d="M218 145 C220 149 220.5 153 219.5 157" stroke="#0e2a1d" stroke-width="3.6" stroke-linecap="round" fill="none"/>
+          <!-- reaching arm + hand -->
           <g id="armReach" opacity="0">
-            <path d="M394 214 C404 218 414 224 424 231" stroke="#102b1e" stroke-width="7" stroke-linecap="round" fill="none"/>
-            <circle cx="427" cy="233" r="4.5" fill="#102b1e"/>
+            <path d="M218 145 C223 147 228 150 232 153" stroke="#0e2a1d" stroke-width="3.6" stroke-linecap="round" fill="none"/>
+            <circle cx="233.5" cy="154" r="2.3" fill="#0e2a1d"/>
           </g>
-          <!-- green edge light on the figure -->
-          <path d="M374 190 C377 186 384 185 388 188" stroke="#38e07b" stroke-width="1.5" opacity=".5" fill="none"/>
+          <!-- the pill inside the reflection -->
+          <g transform="rotate(-20 236 156)" filter="url(#tinyGlow)">
+            <rect x="231" y="153.5" width="10" height="4.6" rx="2.3" fill="url(#pillRr)"/>
+          </g>
         </g>
-        <!-- the red pill inside the reflection -->
-        <g transform="rotate(-20 432 238)" filter="url(#glowPill)">
-          <rect x="422" y="234" width="20" height="9" rx="4.5" fill="url(#pillR)"/>
-        </g>
+        <!-- shimmer sweep when active -->
+        <path id="lensGlintL" d="M200 126 C206 119 216 116 224 118" stroke="#b8ffd6" stroke-width="2" stroke-linecap="round" fill="none"/>
+       </g>
       </g>
-
-      <!-- RIGHT LENS: static blue glint -->
-      <g clip-path="url(#clipR)">
-        <g transform="rotate(-20 524 236)"><rect x="514" y="232" width="20" height="9" rx="4.5" fill="url(#pillB)" opacity=".85"/></g>
-      </g>
-
-      <!-- lens speculars -->
-      <path d="M362 182 C371 170 385 163 397 162" stroke="#ffffff" stroke-width="3" opacity=".28" fill="none" stroke-linecap="round"/>
-      <path d="M466 182 C475 170 489 163 501 162" stroke="#ffffff" stroke-width="3" opacity=".28" fill="none" stroke-linecap="round"/>
-    </g>
-
-    <!-- ——— arms & open palms (white shell, dark articulated hands) ——— -->
-    <!-- left arm (viewer left, red) -->
-    <g>
-      <path d="M195 640 C198 565 215 520 262 500" fill="none" stroke="url(#metal)" stroke-width="58" stroke-linecap="round"/>
-      <path d="M195 640 C198 565 215 520 262 500" fill="none" stroke="url(#shadeL)" stroke-width="58" stroke-linecap="round" opacity=".6"/>
-      <!-- wrist joint -->
-      <circle cx="268" cy="497" r="24" fill="#232830"/>
-      <circle cx="268" cy="497" r="10" fill="#3a414c"/>
-      <!-- palm: dark under-hand, white back plate -->
-      <ellipse cx="255" cy="452" rx="64" ry="38" fill="#1b1f26"/>
-      <ellipse cx="255" cy="447" rx="50" ry="27" fill="#2a2f37"/>
-      <path d="M212 470 C216 486 292 486 298 468 C290 480 222 480 212 470 Z" fill="url(#metal)" opacity=".9"/>
-      <!-- fingers: dark segmented, gray joints -->
-      <g fill="#1b1f26" stroke="#3a414c" stroke-width="1.5">
-        <rect x="190" y="408" width="17" height="44" rx="8.5" transform="rotate(-16 198 430)"/>
-        <rect x="219" y="398" width="17" height="50" rx="8.5" transform="rotate(-7 227 423)"/>
-        <rect x="250" y="395" width="17" height="52" rx="8.5"/>
-        <rect x="281" y="400" width="17" height="48" rx="8.5" transform="rotate(8 289 424)"/>
-        <rect x="305" y="435" width="19" height="42" rx="9.5" transform="rotate(38 314 456)"/>
-      </g>
-      <g fill="#9aa1ad" opacity=".8">
-        <circle cx="200" cy="426" r="2.5"/><circle cx="228" cy="418" r="2.5"/><circle cx="258" cy="415" r="2.5"/><circle cx="288" cy="420" r="2.5"/>
-      </g>
-      <!-- fingertip caps -->
-      <g fill="#c3c9d4">
-        <circle cx="196" cy="412" r="4"/><circle cx="226" cy="402" r="4"/><circle cx="258" cy="399" r="4"/><circle cx="292" cy="404" r="4"/>
-      </g>
-      <!-- the red pill -->
-      <g transform="rotate(-20 255 440)" filter="url(#glowPill)">
-        <g id="redPillArt">
-          <rect x="225" y="431" width="60" height="24" rx="12" fill="url(#pillR)"/>
-          <rect x="233" y="435" width="20" height="7" rx="3.5" fill="#ffffff" opacity=".55"/>
-        </g>
-      </g>
-    </g>
-
-    <!-- right arm (viewer right, blue) -->
-    <g>
-      <path d="M705 640 C702 565 685 520 638 500" fill="none" stroke="url(#metal)" stroke-width="58" stroke-linecap="round"/>
-      <path d="M705 640 C702 565 685 520 638 500" fill="none" stroke="url(#shadeR)" stroke-width="58" stroke-linecap="round" opacity=".6"/>
-      <circle cx="632" cy="497" r="24" fill="#232830"/>
-      <circle cx="632" cy="497" r="10" fill="#3a414c"/>
-      <ellipse cx="645" cy="452" rx="64" ry="38" fill="#1b1f26"/>
-      <ellipse cx="645" cy="447" rx="50" ry="27" fill="#2a2f37"/>
-      <path d="M602 468 C608 486 684 486 688 470 C678 480 610 480 602 468 Z" fill="url(#metal)" opacity=".9"/>
-      <g fill="#1b1f26" stroke="#3a414c" stroke-width="1.5">
-        <rect x="693" y="408" width="17" height="44" rx="8.5" transform="rotate(16 701 430)"/>
-        <rect x="664" y="398" width="17" height="50" rx="8.5" transform="rotate(7 672 423)"/>
-        <rect x="633" y="395" width="17" height="52" rx="8.5"/>
-        <rect x="602" y="400" width="17" height="48" rx="8.5" transform="rotate(-8 610 424)"/>
-        <rect x="576" y="435" width="19" height="42" rx="9.5" transform="rotate(-38 585 456)"/>
-      </g>
-      <g fill="#9aa1ad" opacity=".8">
-        <circle cx="700" cy="426" r="2.5"/><circle cx="672" cy="418" r="2.5"/><circle cx="642" cy="415" r="2.5"/><circle cx="612" cy="420" r="2.5"/>
-      </g>
-      <g fill="#c3c9d4">
-        <circle cx="704" cy="412" r="4"/><circle cx="674" cy="402" r="4"/><circle cx="642" cy="399" r="4"/><circle cx="608" cy="404" r="4"/>
-      </g>
-      <!-- the blue pill -->
-      <g transform="rotate(20 645 440)" filter="url(#glowPill)">
-        <g id="bluePillArt">
-          <rect x="615" y="431" width="60" height="24" rx="12" fill="url(#pillB)"/>
-          <rect x="623" y="435" width="20" height="7" rx="3.5" fill="#ffffff" opacity=".55"/>
-        </g>
-      </g>
-    </g>
-  </svg>
+    </svg>
+  </div>
 
   <h1>Two pills. One decision.</h1>
   <p class="sub">Red pill: sign in, and your app goes to the App Store. Blue pill: back to the browser tab, and this never happened.</p>
@@ -393,21 +250,20 @@ if (canvas && !reduced) {
 }
 
 /* the reflection: as the cursor nears the red pill, the human in the lens reaches for it */
-const oracle = document.querySelector(".oracle");
-const redArt = document.getElementById("redPillArt");
-if (oracle && redArt && !reduced) {
+const wrap = document.getElementById("oracleWrap");
+const redGlow = document.getElementById("redGlow");
+if (wrap && redGlow && !reduced) {
   const near = (e) => {
-    const r = redArt.getBoundingClientRect();
+    const r = redGlow.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     const d = Math.hypot(e.clientX - cx, e.clientY - cy);
-    oracle.classList.toggle("reach", d < 160);
+    wrap.classList.toggle("reach", d < 170);
   };
   addEventListener("mousemove", near);
-  // touch devices: reach when the red button is focused/held
   const redBtn = document.getElementById("takeRed");
-  redBtn.addEventListener("touchstart", () => oracle.classList.add("reach"), { passive: true });
-  redBtn.addEventListener("mouseenter", () => oracle.classList.add("reach"));
-  redBtn.addEventListener("mouseleave", () => oracle.classList.remove("reach"));
+  redBtn.addEventListener("touchstart", () => wrap.classList.add("reach"), { passive: true });
+  redBtn.addEventListener("mouseenter", () => wrap.classList.add("reach"));
+  redBtn.addEventListener("mouseleave", () => wrap.classList.remove("reach"));
 }
 
 /* the choice */
