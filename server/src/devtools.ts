@@ -95,19 +95,35 @@ function extractErrors(log: string): string {
   return errs.slice(0, 30).join("\n") || log.split("\n").slice(-40).join("\n");
 }
 
+/** Find the Xcode workspace/project, wherever Capacitor (CocoaPods or SPM layout) or a bare setup put it. */
+function findIosContainer(projectDir: string): { flag: string; path: string } | null {
+  const dirs = [join(projectDir, "ios", "App"), join(projectDir, "ios"), projectDir];
+  for (const ext of [".xcworkspace", ".xcodeproj"]) {
+    for (const d of dirs) {
+      if (!existsSync(d)) continue;
+      const hit = readdirSync(d).find((f) => f.endsWith(ext));
+      if (hit) return { flag: ext === ".xcworkspace" ? "-workspace" : "-project", path: join(d, hit) };
+    }
+  }
+  return null;
+}
+
+async function pickScheme(flag: string, containerPath: string): Promise<string> {
+  const { stdout } = await exec("xcodebuild", [flag, containerPath, "-list", "-json"], { timeout: 120_000 });
+  const info = JSON.parse(stdout);
+  const schemes: string[] = info.workspace?.schemes ?? info.project?.schemes ?? [];
+  if (!schemes.length) throw new Error("No Xcode schemes found in " + containerPath);
+  return schemes.find((s) => s === "App") ?? schemes[0];
+}
+
 /** Build the iOS app for the simulator; returns the built .app path. Throws with the error excerpt on failure. */
 export async function buildIosSim(projectDir: string): Promise<string> {
-  // Capacitor layout first, then a bare Xcode project at the root.
-  const capWs = join(projectDir, "ios", "App", "App.xcworkspace");
-  const args = ["-sdk", "iphonesimulator", "-configuration", "Debug",
+  const container = findIosContainer(projectDir);
+  if (!container) throw new Error("No iOS project found under ios/ or the project root. Run mobilize_web_app first.");
+  const scheme = await pickScheme(container.flag, container.path);
+  const args = [container.flag, container.path, "-scheme", scheme,
+    "-sdk", "iphonesimulator", "-configuration", "Debug",
     "-derivedDataPath", join(projectDir, ".debut", "DerivedData"), "build"];
-  if (existsSync(capWs)) {
-    args.unshift("-workspace", capWs, "-scheme", "App");
-  } else {
-    const proj = readdirSync(projectDir).find((f) => f.endsWith(".xcodeproj") || f.endsWith(".xcworkspace"));
-    if (!proj) throw new Error("No iOS project found (expected ios/App/App.xcworkspace or a .xcodeproj at the root). Run mobilize_web_app first.");
-    args.unshift(proj.endsWith(".xcworkspace") ? "-workspace" : "-project", join(projectDir, proj));
-  }
   try {
     const { stdout, stderr } = await exec("xcodebuild", args, {
       cwd: projectDir, timeout: 25 * 60 * 1000, maxBuffer: 64 * 1024 * 1024,
