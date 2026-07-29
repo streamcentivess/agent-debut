@@ -176,7 +176,7 @@
     <a class="logo" href="index.html"><img src="brand/mark.svg" alt="" width="26" height="26" /> Agent Debut</a>
     <nav class="nav">
       <a href="dashboard.html" class="on">Your apps</a>
-      <a href="connections.html">Connect stores</a>
+      <a href="connections.html">Set up</a>
       <a href="docs.html">Help</a>
     </nav>
     <div class="bar-right">
@@ -226,9 +226,10 @@
       <span class="box">✓</span>
       <span class="lbl">Create your account</span>
     </div>
-    <div class="task done">
-      <span class="box">✓</span>
+    <div class="task" id="taskAI">
+      <span class="box">2</span>
       <span class="lbl">Connect Debut to your AI tool</span>
+      <a class="btn btn-ghost btn-sm" href="connections.html">Show me how</a>
     </div>
     <div class="task" id="taskStores">
       <span class="box">3</span>
@@ -367,10 +368,17 @@ if (user) {
 /** Reflect real progress in the setup checklist. */
 function updateSetup(conns, hasApps) {
   const storesDone = conns.apple || conns.google;
-  const steps = [true, true, storesDone, hasApps && storesDone];
+  const aiDone = !!localStorage.getItem("debut:ai-connected");
+  const steps = [true, aiDone, storesDone, hasApps && storesDone];
   const done = steps.filter(Boolean).length;
   document.getElementById("setupProg").textContent = `${done} of 4 done`;
   document.getElementById("setupBar").style.width = (done / 4) * 100 + "%";
+  if (aiDone) {
+    const t = document.getElementById("taskAI");
+    t.classList.add("done");
+    t.querySelector(".box").textContent = "✓";
+    t.querySelector("a")?.remove();
+  }
   if (storesDone) {
     const t = document.getElementById("taskStores");
     t.classList.add("done");

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Connect your stores | Agent Debut</title>
+<title>Set up Debut | Agent Debut</title>
 <link rel="icon" type="image/svg+xml" href="brand/favicon.svg" />
 <script src="app/config.js"></script>
 <style>
@@ -39,6 +39,26 @@
   .brandmark { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; font-size: 24px; }
   .brandmark.apple { background: #1c1f26; border: 1px solid var(--border); }
   .brandmark.play { background: #1c1f26; border: 1px solid var(--border); }
+  .brandmark.ai { background: color-mix(in srgb, var(--accent) 14%, transparent); border: 1px solid var(--accent-dim); color: var(--accent); }
+  .brandmark.gh { background: #1c1f26; border: 1px solid var(--border); color: var(--text); }
+
+  /* AI tool picker */
+  .picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 9px; }
+  .tool {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 11px;
+    padding: 13px 14px; cursor: pointer; text-align: left; font-family: inherit; color: inherit;
+    transition: border-color .16s, background .16s, transform .16s var(--ease);
+  }
+  .tool:hover { border-color: var(--accent-dim); transform: translateY(-1px); }
+  .tool.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, transparent); }
+  .tool .n { font-size: 14px; font-weight: 640; display: flex; align-items: center; gap: 7px; }
+  .tool .d { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .tool.on .n::after { content: "✓"; color: var(--accent); margin-left: auto; font-weight: 800; }
+
+  .code { display: flex; align-items: center; justify-content: space-between; gap: 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; padding: 11px 13px; margin-top: 9px; overflow-x: auto; }
+  .code pre { font-family: var(--mono); font-size: 12.5px; white-space: pre; margin: 0; color: var(--text); }
+  .code .cp { flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); border-radius: 7px; padding: 5px 10px; font-size: 12px; cursor: pointer; font-family: var(--font); font-weight: 620; }
+  .code .cp:hover { color: var(--accent); border-color: var(--accent-dim); }
   .card-title { flex: 1; min-width: 0; }
   .card-title h2 { font-size: 17px; font-weight: 690; letter-spacing: -0.01em; }
   .card-title p { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
@@ -96,7 +116,7 @@
     <a class="logo" href="dashboard.html"><img src="brand/mark.svg" alt="" width="26" height="26" /> Agent Debut</a>
     <nav class="nav">
       <a href="dashboard.html">Your apps</a>
-      <a href="connections.html" class="on">Connect stores</a>
+      <a href="connections.html" class="on">Set up</a>
       <a href="docs.html">Help</a>
     </nav>
     <button class="avatar" id="avatarBtn">K</button>
@@ -105,13 +125,73 @@
 
 <div class="wrap">
   <div class="head">
-    <h1>Connect your stores</h1>
-    <p>Debut needs permission to work inside your Apple and Google accounts. You only do this once, and we walk you through every click.</p>
+    <h1>Set up Debut</h1>
+    <p>Four connections, done once. Start with your AI tool, then give Debut permission to work in your Apple and Google accounts. We walk you through every click.</p>
   </div>
 
   <div class="reassure">
     <span>🔒</span>
     <div>Your keys are stored encrypted and are never shown to the AI you chat with. Debut does the work on your behalf, and anything permanent (like submitting to Apple) always asks you first.</div>
+  </div>
+
+  <!-- AI tool -->
+  <div class="card">
+    <div class="card-top">
+      <div class="brandmark ai">✳</div>
+      <div class="card-title">
+        <h2>Your AI tool</h2>
+        <p>This is how you talk to Debut. Pick what you already use and we'll show you the exact steps.</p>
+      </div>
+      <span class="status s-off" id="aiStatus">Not connected</span>
+      <button class="btn btn-primary btn-sm" id="aiToggle">Set up</button>
+    </div>
+    <div class="body open" id="aiBody">
+      <p style="font-size:13.5px; color:var(--muted); margin-bottom:14px">Which one are you using?</p>
+      <div class="picker" id="toolPicker"></div>
+
+      <div id="toolSteps" style="margin-top:22px"></div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="aiDone">I've done this</button>
+        <span class="note" id="aiNote">Most people finish this in under a minute.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GitHub -->
+  <div class="card">
+    <div class="card-top">
+      <div class="brandmark gh">
+        <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      </div>
+      <div class="card-title">
+        <h2>GitHub <span style="color:var(--muted); font-weight:500; font-size:13px">optional</span></h2>
+        <p>Only needed if Debut should turn a web app you built into a mobile app.</p>
+      </div>
+      <span class="status s-off" id="ghStatus">Not connected</span>
+      <button class="btn btn-ghost btn-sm" id="ghToggle">Connect</button>
+    </div>
+    <div class="body" id="ghBody">
+      <div class="why">
+        <h4>What this is for</h4>
+        <ul>
+          <li>Import the app you built on Lovable, Bolt, Replit, or v0</li>
+          <li>Wrap it into real iPhone and Android apps</li>
+          <li>Fix whatever the stores would reject before you submit</li>
+        </ul>
+      </div>
+      <ol class="steps">
+        <li>
+          <h5>Is your code public?</h5>
+          <p>If your repository is public you can skip this entirely. Just tell your AI the address, like <b>github.com/you/your-app</b>, and Debut reads it directly.</p>
+        </li>
+        <li>
+          <h5>Private repository?</h5>
+          <p>Give Debut read access and it can import private code too. You can take this away at any time from your GitHub settings.</p>
+          <button class="btn btn-ghost btn-sm" id="ghConnect" style="margin-top:9px">Give Debut read access</button>
+        </li>
+      </ol>
+    </div>
   </div>
 
   <!-- Apple -->
@@ -243,12 +323,135 @@ if (user) document.getElementById("avatarBtn").textContent =
 document.getElementById("avatarBtn").addEventListener("click", () => auth.signOut());
 
 /* expand / collapse */
-const toggle = (btn, body) => btn.addEventListener("click", () => {
+const toggle = (btn, body, openLabel = "Connect") => btn.addEventListener("click", () => {
   const open = body.classList.toggle("open");
-  btn.textContent = open ? "Close" : "Connect";
+  btn.textContent = open ? "Close" : openLabel;
 });
 toggle(document.getElementById("appleToggle"), document.getElementById("appleBody"));
 toggle(document.getElementById("playToggle"), document.getElementById("playBody"));
+toggle(document.getElementById("aiToggle"), document.getElementById("aiBody"), "Set up");
+toggle(document.getElementById("ghToggle"), document.getElementById("ghBody"));
+
+/* ---------------- AI tool setup ---------------- */
+const MCP = window.DEBUT_CONFIG.MCP_ENDPOINT;
+
+const TOOLS = [
+  {
+    id: "claude-code", name: "Claude Code", icon: "✳", desc: "Terminal",
+    steps: [
+      { h: "Open your terminal", p: "Go to the folder your app lives in, then paste this and press enter.",
+        code: `claude mcp add --transport http debut ${MCP}` },
+      { h: "Check that it worked", p: "Start Claude Code and ask it this. It should list Debut's tools.",
+        code: `what tools does debut have?` },
+    ],
+  },
+  {
+    id: "claude-desktop", name: "Claude Desktop", icon: "✳", desc: "App or claude.ai",
+    steps: [
+      { h: "Open your settings", p: "In Claude, go to Settings, then Connectors." },
+      { h: "Add Debut", p: "Click Add custom connector, name it Debut, and paste this address.", code: MCP },
+      { h: "Approve it", p: "Click Add, then approve the connection when Claude asks." },
+    ],
+  },
+  {
+    id: "cursor", name: "Cursor", icon: "▮", desc: "Code editor",
+    steps: [
+      { h: "Create a settings file", p: "In your project, make a file called .cursor/mcp.json and paste this in.",
+        code: `{\n  "mcpServers": {\n    "debut": { "url": "${MCP}" }\n  }\n}` },
+      { h: "Restart Cursor", p: "Debut then shows up under Settings, MCP." },
+    ],
+  },
+  {
+    id: "codex", name: "Codex", icon: "◎", desc: "OpenAI",
+    steps: [
+      { h: "Open your Codex config", p: "Add these two lines to the file at ~/.codex/config.toml",
+        code: `[mcp_servers.debut]\nurl = "${MCP}"` },
+      { h: "Restart Codex", p: "Then ask it what tools Debut has." },
+    ],
+  },
+  {
+    id: "vscode", name: "VS Code", icon: "▢", desc: "With Copilot",
+    steps: [
+      { h: "Run this once", p: "Paste this into your terminal.",
+        code: `code --add-mcp '{"name":"debut","url":"${MCP}"}'` },
+      { h: "Or add it by hand", p: "Settings, then MCP Servers, then add the same address." },
+    ],
+  },
+  {
+    id: "other", name: "Something else", icon: "⋯", desc: "Windsurf, Cline, Replit",
+    steps: [
+      { h: "Use the universal command", p: "This works with 20+ tools. Paste it in your terminal and pick your tool from the list.",
+        code: `npx add-mcp ${MCP}` },
+      { h: "Or add it manually", p: "Any tool with an MCP or Connectors setting will accept this address.", code: MCP },
+    ],
+  },
+  {
+    id: "none", name: "I don't have one", icon: "🤷", desc: "Start here",
+    steps: [
+      { h: "You'll need an AI tool first", p: "Debut works through one. Claude is the friendliest place to start and there's a free tier." },
+      { h: "Install Claude", p: "Download it from claude.ai/download, sign in, then come back here and pick Claude Desktop above." },
+      { h: "Prefer we do it with you?", p: "Email support@agentdebut.app and we'll get you set up on a call." },
+    ],
+  },
+];
+
+const picker = document.getElementById("toolPicker");
+const stepsBox = document.getElementById("toolSteps");
+
+picker.innerHTML = TOOLS.map(t => `
+  <button class="tool" data-id="${t.id}">
+    <span class="n">${t.icon} ${t.name}</span>
+    <span class="d">${t.desc}</span>
+  </button>`).join("");
+
+function showTool(id) {
+  const t = TOOLS.find(x => x.id === id);
+  picker.querySelectorAll(".tool").forEach(el => el.classList.toggle("on", el.dataset.id === id));
+  stepsBox.innerHTML = `<ol class="steps">` + t.steps.map(s => `
+    <li>
+      <h5>${s.h}</h5>
+      <p>${s.p}</p>
+      ${s.code ? `<div class="code"><pre>${s.code.replace(/</g, "&lt;")}</pre>
+        <button class="cp" data-code="${s.code.replace(/"/g, "&quot;")}">Copy</button></div>` : ""}
+    </li>`).join("") + `</ol>`;
+  stepsBox.querySelectorAll(".cp").forEach(b => b.addEventListener("click", () => {
+    navigator.clipboard.writeText(b.dataset.code);
+    b.textContent = "Copied";
+    setTimeout(() => (b.textContent = "Copy"), 1500);
+  }));
+  localStorage.setItem("debut:tool", id);
+}
+
+picker.querySelectorAll(".tool").forEach(el =>
+  el.addEventListener("click", () => showTool(el.dataset.id)));
+showTool(localStorage.getItem("debut:tool") || "claude-code");
+
+document.getElementById("aiDone").addEventListener("click", () => {
+  localStorage.setItem("debut:ai-connected", "1");
+  const s = document.getElementById("aiStatus");
+  s.textContent = "Connected"; s.className = "status s-on";
+  document.getElementById("aiToggle").textContent = "Change";
+  document.getElementById("aiBody").classList.remove("open");
+});
+if (localStorage.getItem("debut:ai-connected")) {
+  const s = document.getElementById("aiStatus");
+  s.textContent = "Connected"; s.className = "status s-on";
+  document.getElementById("aiToggle").textContent = "Change";
+  document.getElementById("aiBody").classList.remove("open");
+}
+
+document.getElementById("ghConnect").addEventListener("click", async () => {
+  try {
+    await auth.signInWithProvider("github");
+    localStorage.setItem("debut:gh-connected", "1");
+    const s = document.getElementById("ghStatus");
+    s.textContent = "Connected"; s.className = "status s-on";
+  } catch (e) { alert("Could not reach GitHub: " + e.message); }
+});
+if (localStorage.getItem("debut:gh-connected")) {
+  const s = document.getElementById("ghStatus");
+  s.textContent = "Connected"; s.className = "status s-on";
+}
 
 /* file pickers */
 function wireDrop(dropId, inputId, label) {
