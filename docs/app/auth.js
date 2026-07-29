@@ -32,6 +32,27 @@ const PREVIEW_USER = {
 export const auth = {
   preview: PREVIEW,
 
+  /**
+   * Which sign-in methods this project actually has switched on.
+   * Lets the sign-in page hide buttons that would only produce an error.
+   */
+  async enabledProviders() {
+    if (PREVIEW) return { email: true, github: true, google: true };
+    try {
+      const r = await fetch(`${cfg.SUPABASE_URL}/auth/v1/settings`, {
+        headers: { apikey: cfg.SUPABASE_ANON_KEY },
+      });
+      const s = await r.json();
+      return {
+        email: !s.disable_signup,
+        github: !!s.external?.github,
+        google: !!s.external?.google,
+      };
+    } catch {
+      return { email: true, github: true, google: true };
+    }
+  },
+
   /** Current signed-in user, or null. */
   async user() {
     if (PREVIEW) {

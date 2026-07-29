@@ -1,9 +1,9 @@
 // Agent Debut client configuration.
-// Fill these in from your Supabase project (Settings -> API). The anon key is
-// designed to be public; row-level security is what protects the data.
+// The publishable key is meant to ship in the browser. Row-level security and
+// table grants are what actually protect the data, never the secrecy of this key.
 window.DEBUT_CONFIG = {
-  SUPABASE_URL: "",      // e.g. https://abcdefgh.supabase.co
-  SUPABASE_ANON_KEY: "", // e.g. eyJhbGciOi...
+  SUPABASE_URL: "https://ggkedugdbkdmmrosedpw.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_kVENyiH3m7ySFPXvDWJVkQ_2nErQYR8",
   MCP_ENDPOINT: "https://api.agentdebut.app/mcp",
 };
 

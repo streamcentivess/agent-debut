@@ -322,6 +322,15 @@ const chime = () => {
 // already signed in? go straight through
 auth.user().then(u => { if (u) location.href = "dashboard.html"; });
 
+// only offer sign-in methods this project has turned on
+const providers = await auth.enabledProviders();
+if (!providers.github) document.getElementById("ghBtn").style.display = "none";
+if (!providers.google) document.getElementById("ggBtn").style.display = "none";
+if (!providers.github && !providers.google) {
+  const or = document.querySelector(".gate .or");
+  if (or) or.style.display = "none";
+}
+
 const fail = (err) => {
   const done = document.getElementById("gateDone");
   document.getElementById("doneTitle").textContent = "That did not work.";
