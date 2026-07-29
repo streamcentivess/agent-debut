@@ -167,6 +167,23 @@ create policy checks_rw on readiness_checks for all
   using (exists (select 1 from apps a where a.id = app_id and is_member(a.org_id)))
   with check (exists (select 1 from apps a where a.id = app_id and is_member(a.org_id)));
 
+-- ---------------------------------------------------------------------- grants
+-- The project has "automatically expose new tables" turned OFF, so access is
+-- granted deliberately, one table at a time. Grants are the outer gate and the
+-- RLS policies above are the row filter: a caller needs both to read anything.
+--
+-- Note what is missing here on purpose. `jobs` and `credit_ledger` are never
+-- exposed to the browser; only the Mac worker touches them, using the service
+-- role key, which bypasses both grants and RLS.
+grant usage on schema public to anon, authenticated;
+
+grant select on orgs, memberships, apps, readiness_checks, activity, credit_balances
+  to authenticated;
+grant select, insert, update on store_connections to authenticated;
+
+-- Anything added later needs its own grant, or the dashboard will connect
+-- successfully and then see an empty result.
+
 -- --------------------------------------------------------------------- storage
 -- Private bucket for .p8 and service-account files.
 insert into storage.buckets (id, name, public)
