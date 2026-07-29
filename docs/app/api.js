@@ -24,14 +24,28 @@ async function sb() {
   return client;
 }
 
+let cachedOrg = null;
+
+/**
+ * The caller's organization.
+ *
+ * Accounts created before the signup trigger existed have no organization, so
+ * fall back to bootstrap_org(), which creates one on demand and is safe to call
+ * repeatedly.
+ */
 async function orgId() {
+  if (cachedOrg) return cachedOrg;
   const c = await sb();
   const { data: { user } } = await c.auth.getUser();
   if (!user) throw new Error("Not signed in.");
-  const { data, error } = await c
-    .from("memberships").select("org_id").eq("user_id", user.id).limit(1).single();
-  if (error) throw new Error("No organization found for this account.");
-  return data.org_id;
+
+  const { data } = await c
+    .from("memberships").select("org_id").eq("user_id", user.id).limit(1).maybeSingle();
+  if (data?.org_id) return (cachedOrg = data.org_id);
+
+  const { data: made, error } = await c.rpc("bootstrap_org");
+  if (error) throw new Error("Could not set up your workspace: " + error.message);
+  return (cachedOrg = made);
 }
 
 /* ---------- preview store ---------- */
