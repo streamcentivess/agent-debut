@@ -10,6 +10,15 @@ const PREVIEW = window.DEBUT_PREVIEW;
 
 let client = null;
 
+/** Never let a hung network call freeze the whole page. */
+export function withTimeout(promise, ms, label = "request") {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)),
+  ]);
+}
+
 async function supabase() {
   if (PREVIEW) return null;
   if (client) return client;
@@ -17,7 +26,15 @@ async function supabase() {
     "https://esm.sh/@supabase/supabase-js@2"
   );
   client = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      // Opt out of the cross-tab Web Lock. It is meant to stop two tabs
+      // refreshing a token at once, but a stale lock leaves every later call
+      // hanging forever, which is a far worse failure than a duplicate refresh.
+      lock: async (_name, _acquireTimeout, fn) => fn(),
+    },
   });
   return client;
 }
@@ -53,7 +70,13 @@ export const auth = {
     }
   },
 
-  /** Current signed-in user, or null. */
+  /**
+   * Current signed-in user, or null.
+   *
+   * Reads the stored session rather than calling getUser(), which hits the
+   * network and takes a cross-tab lock that can stall indefinitely when several
+   * tabs are open. Everything shown in the interface is already in the session.
+   */
   async user() {
     if (PREVIEW) {
       return sessionStorage.getItem("debut:preview-signed-in")
@@ -61,14 +84,15 @@ export const auth = {
         : null;
     }
     const sb = await supabase();
-    const { data } = await sb.auth.getUser();
-    if (!data?.user) return null;
-    const m = data.user.user_metadata ?? {};
+    const { data } = await withTimeout(sb.auth.getSession(), 8000, "getSession");
+    const u = data?.session?.user;
+    if (!u) return null;
+    const m = u.user_metadata ?? {};
     return {
-      email: data.user.email,
-      name: m.full_name || m.user_name || data.user.email?.split("@")[0],
+      email: u.email,
+      name: m.full_name || m.user_name || u.email?.split("@")[0],
       avatar: m.avatar_url ?? null,
-      id: data.user.id,
+      id: u.id,
     };
   },
 

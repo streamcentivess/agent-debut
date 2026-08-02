@@ -341,8 +341,23 @@ const STAGES = [
 ];
 
 /* ---------- boot ---------- */
-const user = await auth.requireUser();
-if (user) {
+function bootFailed(err) {
+  const n = document.getElementById("previewNote");
+  n.style.display = "block";
+  n.innerHTML = `<b>Could not load your workspace.</b> ${err.message}
+    <button id="retryBoot" style="margin-left:10px;background:none;border:1px solid currentColor;
+    color:inherit;border-radius:7px;padding:3px 10px;cursor:pointer;font:inherit;font-size:12.5px">Try again</button>`;
+  document.getElementById("retryBoot").addEventListener("click", () => location.reload());
+  console.error("[debut] boot failed:", err);
+}
+
+let user = null;
+try {
+  user = await auth.requireUser();
+} catch (e) {
+  bootFailed(e);
+}
+if (user) try {
   document.getElementById("whoEmail").textContent = user.email;
   document.getElementById("avatarBtn").textContent = (user.name || user.email || "?")[0].toUpperCase();
   document.getElementById("greeting").textContent =
@@ -363,6 +378,8 @@ if (user) {
       Math.round((credits.remaining / credits.included) * 100) + "%";
   }
   updateSetup(conns, (apps ?? SAMPLE_APPS).length > 0);
+} catch (e) {
+  bootFailed(e);
 }
 
 /** Reflect real progress in the setup checklist. */
