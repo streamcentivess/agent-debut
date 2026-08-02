@@ -6,6 +6,8 @@ export interface AscCredentials {
   issuerId: string;
   /** Path to the AuthKey_XXXX.p8 file downloaded from App Store Connect. */
   privateKeyPath: string;
+  /** The key itself, when it comes from storage rather than disk (hosted mode). */
+  privateKeyPem?: string;
 }
 
 export function credentialsFromEnv(): AscCredentials {
@@ -24,13 +26,17 @@ export function credentialsFromEnv(): AscCredentials {
  * Mint a short-lived ES256 JWT for the App Store Connect API.
  * Apple caps token lifetime at 20 minutes; we use 15 and cache until near expiry.
  */
-let cached: { token: string; expiresAt: number } | null = null;
+// Keyed by issuer + key id. A single shared cache would be a cross-tenant leak:
+// in hosted mode one organization could be handed another organization's token.
+const cache = new Map<string, { token: string; expiresAt: number }>();
 
 export async function ascToken(creds: AscCredentials): Promise<string> {
+  const cacheKey = `${creds.issuerId}:${creds.keyId}`;
+  const cached = cache.get(cacheKey) ?? null;
   const now = Math.floor(Date.now() / 1000);
   if (cached && cached.expiresAt - now > 60) return cached.token;
 
-  const pem = readFileSync(creds.privateKeyPath, "utf8");
+  const pem = creds.privateKeyPem ?? readFileSync(creds.privateKeyPath, "utf8");
   const key = await importPKCS8(pem, "ES256");
   const exp = now + 15 * 60;
   const token = await new SignJWT({ aud: "appstoreconnect-v1" })
@@ -40,6 +46,6 @@ export async function ascToken(creds: AscCredentials): Promise<string> {
     .setExpirationTime(exp)
     .sign(key);
 
-  cached = { token, expiresAt: exp };
+  cache.set(cacheKey, { token, expiresAt: exp });
   return token;
 }
