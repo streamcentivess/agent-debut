@@ -76,7 +76,7 @@ export async function enqueueJob(
 
 export async function getJob(orgId: string, jobId: string) {
   const rows = await rest<any[]>(
-    `jobs?id=eq.${jobId}&org_id=eq.${orgId}&select=id,tool,status,result,error,created_at,finished_at&limit=1`
+    `jobs?id=eq.${jobId}&org_id=eq.${orgId}&select=id,tool,status,result,error,refunded,created_at,finished_at&limit=1`
   );
   return rows[0] ?? null;
 }
@@ -114,6 +114,35 @@ export async function chargeCredits(orgId: string, amount: number, reason: strin
     body: JSON.stringify({ org_id: orgId, delta: -amount, reason }),
   });
   return true;
+}
+
+/**
+ * Give credits back when work fails.
+ *
+ * Lance charges for attempts. We watched a blocked audit there burn 325 of a
+ * 500-credit trial and return nothing usable, so Debut refunds any job that
+ * does not finish. Customers pay for outcomes, not for our failures.
+ */
+export async function refundCredits(orgId: string, amount: number, reason: string) {
+  const rows = await rest<any[]>(
+    `credit_balances?org_id=eq.${orgId}&select=remaining&limit=1`
+  );
+  const remaining = rows[0]?.remaining ?? 0;
+  await rest(`credit_balances?org_id=eq.${orgId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ remaining: remaining + amount, updated_at: new Date().toISOString() }),
+  });
+  await rest("credit_ledger", {
+    method: "POST",
+    body: JSON.stringify({ org_id: orgId, delta: amount, reason: `refund: ${reason}` }),
+  });
+}
+
+export async function markRefunded(jobId: string) {
+  await rest(`jobs?id=eq.${jobId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ refunded: true }),
+  }).catch(() => {});
 }
 
 export async function logActivity(

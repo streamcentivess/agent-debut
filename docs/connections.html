@@ -59,6 +59,13 @@
   .code pre { font-family: var(--mono); font-size: 12.5px; white-space: pre; margin: 0; color: var(--text); }
   .code .cp { flex-shrink: 0; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); border-radius: 7px; padding: 5px 10px; font-size: 12px; cursor: pointer; font-family: var(--font); font-weight: 620; }
   .code .cp:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+  .keybox { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .keybox-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .keybox h4 { font-size: 14.5px; font-weight: 660; }
+  .keybox p { font-size: 13px; color: var(--muted); margin-top: 3px; max-width: 460px; }
+  .keybox .warn { color: #fbbf24; font-size: 12.5px; margin-top: 8px; }
+  .keybox.has-key { border-color: var(--accent-dim); }
   .card-title { flex: 1; min-width: 0; }
   .card-title h2 { font-size: 17px; font-weight: 690; letter-spacing: -0.01em; }
   .card-title p { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
@@ -146,7 +153,21 @@
       <button class="btn btn-primary btn-sm" id="aiToggle">Set up</button>
     </div>
     <div class="body open" id="aiBody">
-      <p style="font-size:13.5px; color:var(--muted); margin-bottom:14px">Which one are you using?</p>
+      <div class="keybox" id="keyBox">
+        <div class="keybox-row">
+          <div>
+            <h4 id="keyTitle">First, create your key</h4>
+            <p id="keyHint">This is how your AI tool proves it is you. We fill it into the steps below automatically.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="mintKey">Create key</button>
+        </div>
+        <div class="revealed" id="keyReveal" hidden>
+          <div class="code"><pre id="keyValue"></pre><button class="cp" id="copyKey">Copy</button></div>
+          <p class="warn">Save this somewhere safe. For your security we cannot show it again, though you can always create another.</p>
+        </div>
+      </div>
+
+      <p style="font-size:13.5px; color:var(--muted); margin:20px 0 14px">Which tool are you using?</p>
       <div class="picker" id="toolPicker"></div>
 
       <div id="toolSteps" style="margin-top:22px"></div>
@@ -335,12 +356,13 @@ toggle(document.getElementById("ghToggle"), document.getElementById("ghBody"));
 /* ---------------- AI tool setup ---------------- */
 const MCP = window.DEBUT_CONFIG.MCP_ENDPOINT;
 
+// __KEY__ is swapped for the caller's real key once one exists.
 const TOOLS = [
   {
     id: "claude-code", name: "Claude Code", icon: "✳", desc: "Terminal",
     steps: [
       { h: "Open your terminal", p: "Go to the folder your app lives in, then paste this and press enter.",
-        code: `claude mcp add --transport http debut ${MCP}` },
+        code: `claude mcp add --transport http debut ${MCP} \\\n  --header "Authorization: Bearer __KEY__"` },
       { h: "Check that it worked", p: "Start Claude Code and ask it this. It should list Debut's tools.",
         code: `what tools does debut have?` },
     ],
@@ -350,22 +372,22 @@ const TOOLS = [
     steps: [
       { h: "Open your settings", p: "In Claude, go to Settings, then Connectors." },
       { h: "Add Debut", p: "Click Add custom connector, name it Debut, and paste this address.", code: MCP },
-      { h: "Approve it", p: "Click Add, then approve the connection when Claude asks." },
+      { h: "Paste your key", p: "When Claude asks for authentication, use this.", code: `Bearer __KEY__` },
     ],
   },
   {
     id: "cursor", name: "Cursor", icon: "▮", desc: "Code editor",
     steps: [
       { h: "Create a settings file", p: "In your project, make a file called .cursor/mcp.json and paste this in.",
-        code: `{\n  "mcpServers": {\n    "debut": { "url": "${MCP}" }\n  }\n}` },
+        code: `{\n  "mcpServers": {\n    "debut": {\n      "url": "${MCP}",\n      "headers": { "Authorization": "Bearer __KEY__" }\n    }\n  }\n}` },
       { h: "Restart Cursor", p: "Debut then shows up under Settings, MCP." },
     ],
   },
   {
     id: "codex", name: "Codex", icon: "◎", desc: "OpenAI",
     steps: [
-      { h: "Open your Codex config", p: "Add these two lines to the file at ~/.codex/config.toml",
-        code: `[mcp_servers.debut]\nurl = "${MCP}"` },
+      { h: "Open your Codex config", p: "Add this to the file at ~/.codex/config.toml",
+        code: `[mcp_servers.debut]\nurl = "${MCP}"\nheaders = { Authorization = "Bearer __KEY__" }` },
       { h: "Restart Codex", p: "Then ask it what tools Debut has." },
     ],
   },
@@ -373,16 +395,17 @@ const TOOLS = [
     id: "vscode", name: "VS Code", icon: "▢", desc: "With Copilot",
     steps: [
       { h: "Run this once", p: "Paste this into your terminal.",
-        code: `code --add-mcp '{"name":"debut","url":"${MCP}"}'` },
-      { h: "Or add it by hand", p: "Settings, then MCP Servers, then add the same address." },
+        code: `code --add-mcp '{"name":"debut","url":"${MCP}","headers":{"Authorization":"Bearer __KEY__"}}'` },
+      { h: "Or add it by hand", p: "Settings, then MCP Servers, then add the same address and header." },
     ],
   },
   {
     id: "other", name: "Something else", icon: "⋯", desc: "Windsurf, Cline, Replit",
     steps: [
       { h: "Use the universal command", p: "This works with 20+ tools. Paste it in your terminal and pick your tool from the list.",
-        code: `npx add-mcp ${MCP}` },
-      { h: "Or add it manually", p: "Any tool with an MCP or Connectors setting will accept this address.", code: MCP },
+        code: `npx add-mcp ${MCP} --header "Authorization: Bearer __KEY__"` },
+      { h: "Or add it manually", p: "Any tool with an MCP setting takes this config.",
+        code: `{\n  "url": "${MCP}",\n  "headers": { "Authorization": "Bearer __KEY__" }\n}` },
     ],
   },
   {
@@ -404,15 +427,19 @@ picker.innerHTML = TOOLS.map(t => `
     <span class="d">${t.desc}</span>
   </button>`).join("");
 
+let CURRENT_KEY = null;
+
 function showTool(id) {
   const t = TOOLS.find(x => x.id === id);
+  const key = CURRENT_KEY || "YOUR_KEY_HERE";
   picker.querySelectorAll(".tool").forEach(el => el.classList.toggle("on", el.dataset.id === id));
   stepsBox.innerHTML = `<ol class="steps">` + t.steps.map(s => `
     <li>
       <h5>${s.h}</h5>
       <p>${s.p}</p>
-      ${s.code ? `<div class="code"><pre>${s.code.replace(/</g, "&lt;")}</pre>
-        <button class="cp" data-code="${s.code.replace(/"/g, "&quot;")}">Copy</button></div>` : ""}
+      ${s.code ? (() => { const filled = s.code.replaceAll("__KEY__", key);
+        return `<div class="code"><pre>${filled.replace(/</g, "&lt;")}</pre>
+        <button class="cp" data-code="${filled.replace(/"/g, "&quot;")}">Copy</button></div>`; })() : ""}
     </li>`).join("") + `</ol>`;
   stepsBox.querySelectorAll(".cp").forEach(b => b.addEventListener("click", () => {
     navigator.clipboard.writeText(b.dataset.code);
@@ -425,6 +452,40 @@ function showTool(id) {
 picker.querySelectorAll(".tool").forEach(el =>
   el.addEventListener("click", () => showTool(el.dataset.id)));
 showTool(localStorage.getItem("debut:tool") || "claude-code");
+
+// existing keys mean setup already happened once
+const existingKeys = await api.keys().catch(() => []);
+if (existingKeys.length) {
+  document.getElementById("keyTitle").textContent = "Your key is ready";
+  document.getElementById("keyHint").textContent =
+    `Using ${existingKeys[0].name} (${existingKeys[0].key_prefix}). Create another if you want a separate key per machine.`;
+  document.getElementById("mintKey").textContent = "Create another";
+  document.getElementById("keyBox").classList.add("has-key");
+}
+
+document.getElementById("mintKey").addEventListener("click", async (e) => {
+  e.target.disabled = true; e.target.textContent = "Creating...";
+  try {
+    const tool = TOOLS.find(t => t.id === (localStorage.getItem("debut:tool") || "claude-code"));
+    CURRENT_KEY = await api.createKey(tool ? tool.name : "My AI tool");
+    document.getElementById("keyValue").textContent = CURRENT_KEY;
+    document.getElementById("keyReveal").hidden = false;
+    document.getElementById("keyTitle").textContent = "Here is your key";
+    document.getElementById("keyHint").textContent = "It is already filled into every step below.";
+    document.getElementById("keyBox").classList.add("has-key");
+    showTool(localStorage.getItem("debut:tool") || "claude-code");
+    e.target.textContent = "Create another";
+  } catch (err) {
+    alert("Could not create a key: " + err.message);
+    e.target.textContent = "Create key";
+  } finally { e.target.disabled = false; }
+});
+
+document.getElementById("copyKey").addEventListener("click", (e) => {
+  navigator.clipboard.writeText(CURRENT_KEY || "");
+  e.target.textContent = "Copied";
+  setTimeout(() => (e.target.textContent = "Copy"), 1500);
+});
 
 document.getElementById("aiDone").addEventListener("click", () => {
   localStorage.setItem("debut:ai-connected", "1");

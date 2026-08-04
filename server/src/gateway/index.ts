@@ -20,6 +20,8 @@ import {
   enqueueJob,
   getJob,
   logActivity,
+  markRefunded,
+  refundCredits,
   tenantFromKey,
   type Tenant,
 } from "./tenant.js";
@@ -130,6 +132,19 @@ function buildServer(tenant: Tenant): McpServer {
     try {
       const job = await getJob(tenant.orgId, job_id);
       if (!job) return fail("No job with that id for this account.");
+
+      // Failed work is refunded once, the first time anyone looks.
+      if (job.status === "failed" && !job.refunded) {
+        const cost = QUEUED_TOOLS[job.tool]?.cost ?? 0;
+        if (cost) {
+          await refundCredits(tenant.orgId, cost, job.tool);
+          await markRefunded(job.id);
+          await logActivity(tenant.orgId, "warn",
+            `${QUEUED_TOOLS[job.tool]?.title ?? job.tool} failed, so we refunded ${cost} credits.`);
+          return text({ ...job, credits_refunded: cost,
+            note: "This did not finish, so the credits went back to your balance." });
+        }
+      }
       return text(job);
     } catch (e) { return fail((e as Error).message); }
   });

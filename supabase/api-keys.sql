@@ -54,3 +54,6 @@ begin
 end $$;
 
 grant execute on function create_api_key(text) to authenticated;
+
+-- Failed jobs are refunded exactly once; this flag makes that idempotent.
+alter table jobs add column if not exists refunded boolean not null default false;

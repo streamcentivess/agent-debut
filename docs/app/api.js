@@ -142,6 +142,58 @@ export const api = {
     return data;
   },
 
+  /** Keys this org has issued. The secret itself is never returned again. */
+  async keys() {
+    if (PREVIEW) return local.get("keys", []);
+    const c = await sb();
+    const { data, error } = await c.from("api_keys")
+      .select("id, name, key_prefix, created_at, last_used_at, revoked_at")
+      .eq("org_id", await orgId())
+      .is("revoked_at", null)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  /** Mint a key. The plaintext comes back exactly once, so show it now. */
+  async createKey(name = "My AI tool") {
+    if (PREVIEW) {
+      const fake = "debut_sk_" + Array.from({ length: 48 },
+        () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
+      const list = local.get("keys", []);
+      list.unshift({ id: crypto.randomUUID(), name, key_prefix: fake.slice(0, 17) + "...",
+        created_at: new Date().toISOString(), last_used_at: null });
+      local.set("keys", list);
+      return fake;
+    }
+    const c = await sb();
+    const { data, error } = await c.rpc("create_api_key", { key_name: name });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  async revokeKey(id) {
+    if (PREVIEW) {
+      local.set("keys", local.get("keys", []).filter(k => k.id !== id));
+      return;
+    }
+    const c = await sb();
+    const { error } = await c.from("api_keys")
+      .update({ revoked_at: new Date().toISOString() }).eq("id", id);
+    if (error) throw new Error(error.message);
+  },
+
+  /** Where the credits went, newest first. */
+  async usage(limit = 20) {
+    if (PREVIEW) return null;
+    const c = await sb();
+    const { data, error } = await c.from("credit_ledger")
+      .select("delta, reason, created_at").eq("org_id", await orgId())
+      .order("created_at", { ascending: false }).limit(limit);
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
   /** Credit balance for the meter. */
   async credits() {
     if (PREVIEW) return { remaining: 2140, included: 2500 };
